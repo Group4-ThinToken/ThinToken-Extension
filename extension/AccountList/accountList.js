@@ -1,69 +1,55 @@
-function drawProductList(products) {
-    const productList = document.getElementById("accountlisting");
-    const productsPerRow = 3; // Pwede niyo to palitan kung gusto niyo more products per row
+function createAccountCard(account) {
+    let accountCard = document.createElement("div");
+    accountCard.classList.add("accountCard");
 
-    productList.replaceChildren([]);
-    if (!products.length) return;
+    let icon = document.createElement("img");
+    icon.src = account.icon;
+    icon.classList.add("accountIcon");
+    accountCard.appendChild(icon);
 
-    let rows = [];
-    for (let i = 0; i < products.length / productsPerRow; i++) {
-        rows.push(
-            createElement("div", ["row"])
-        );
-    }
+    let accountName = document.createElement("div");
+    accountName.textContent = account.accountName;
+    accountName.classList.add("accountName");
+    accountCard.appendChild(accountName);
 
-    for (let i = 0; i < products.length; i++) {
-        let currRow = Math.floor(i / productsPerRow);
-        let test = drawOneProduct(products[i]);
-        rows[currRow].appendChild(test);
-    }
+    let accountEmail = document.createElement("div");
+    accountEmail.textContent = account.accountEmail;
+    accountEmail.classList.add("accountEmail");
+    accountCard.appendChild(accountEmail);
 
-    let kulang = productsPerRow - rows[rows.length - 1].children.length;
-    if (kulang > 0) {
-        for (let i = 0; i < kulang; i++) {
-            rows[rows.length - 1].appendChild(createElement("div", ["col", "mx-1"]));
-        }
-    }
+    let accountType = document.createElement("div");
+    accountType.textContent = "2FA";
+    accountType.classList.add("accountType");
+    accountCard.appendChild(accountType);
 
-    rows.forEach(row => productList.appendChild(row));
+    return accountCard;
 }
 
-function drawOneProduct(details) {
-    let column = createElement("div", ["col", "mx-1"]);
-    let link = createElement("a");
-    link.setAttribute("href", details.productPage);
-    let container = createElement("div", ["product-landing-container"]);
+function displayAccounts(accounts) {
+    const accountList = document.getElementById("accountlisting");
 
-    let imgContainer = createElement("div", ["img-container"]);
-    let productImg = createElement("img");
-    productImg.setAttribute("src", details.img);
-    imgContainer.appendChild(
-        productImg
-    );
-
-    let productName = createElement("div", ["name"], "green-text");
-    productName.textContent = details.name;
-    let productDesc = createElement("div", ["description"]);
-    productDesc.textContent = details.description;
-    let productPrice = createElement("div", ["price"], "green-text");
-    productPrice.textContent = `₱ ${details.price.toFixed(2)}`;
-    let starsContainer = drawStars(details.n_stars, details.n_reviews);
-
-    container.appendChild(imgContainer);
-    container.appendChild(productName);
-    container.appendChild(productDesc);
-    container.appendChild(productPrice);
-    container.appendChild(starsContainer);
-    link.appendChild(container);
-    column.appendChild(link);
-
-    return column;
+    for (let account of accounts) {
+        let accountCard = createAccountCard(account);
+        accountList.appendChild(accountCard);
+    }
 }
 
-const products = [
+const accounts = [
     {
-        accountName: "biogesic",
-        accountEmail: "Biogesic",
-        
+        accountName: "Facebook",
+        accountEmail: "example@facebook.com",
+        icon: "https://path/to/facebook/icon.png"
     },
-    ]
+    {
+        accountName: "Google",
+        accountEmail: "example@google.com",
+        icon: "https://path/to/google/icon.png"
+    },
+    {
+        accountName: "Twitter",
+        accountEmail: "example@twitter.com",
+        icon: "https://path/to/twitter/icon.png"
+    },
+];
+
+displayAccounts(accounts);
