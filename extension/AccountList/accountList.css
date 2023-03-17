@@ -1,0 +1,27 @@
+.accountlist {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .accountCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 200px;
+    padding: 10px;
+    margin: 10px;
+  }
+  
+  .accountCard .icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+  }
+  
+  .accountCard .accountName,
+  .accountCard .accountEmail {
+    margin-bottom: 5px;
+  }
+  

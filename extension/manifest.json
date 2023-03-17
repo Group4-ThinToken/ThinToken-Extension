@@ -10,10 +10,7 @@
           ]
         }
       ],
-    "options_ui":{
-      "page":"optionsPage.html"
-    },
     "action": {
-      "default_popup": "optionsPage.html"
+      "default_popup": "./Popup/popup.html"
     }
   }

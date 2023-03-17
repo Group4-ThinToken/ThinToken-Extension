@@ -1,0 +1,130 @@
+*{
+    box-sizing: border-box;
+    
+}
+
+html, body{
+    overflow: hidden;
+    width: 430px;
+
+}
+
+body{
+    height: auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    /* background-color: */
+}
+
+.header{
+    background-color:lightgray ;
+    width: 100%;
+    height: 35px;
+    position: fixed;
+    z-index: 10;
+}
+
+#sidebarMenu{
+    height: 100%;
+    position: fixed;
+    left:0;
+    top:0;
+    width: 40%;
+    margin-top: 20px;
+    background-color: aqua;
+    transform: translate(-100%);
+    transition: transform 300ms ease-in-out;
+
+}
+
+.nav{
+    list-style: none;
+    padding: 5px;
+}
+
+.nav li a{
+    color:black;
+    display: block;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: medium;
+    padding-bottom: 10px;
+
+}
+
+.icon{
+    width: 22px;
+    height: 22px;
+    position: absolute;
+    z-index: 20;
+    top:7.5px;
+    background-color: white;
+    cursor: pointer;
+}
+
+#Open:checked ~ #sidebarMenu{
+    transform: translate(0px);
+}
+
+.main{
+
+    height: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    flex-direction: column;
+    padding-bottom: 3px;
+}
+
+.main h1{
+    text-align: center;
+}
+
+.innercontainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.addkey{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.inputbox{
+    margin-left: 13px;
+    padding: 5px;
+    border-radius: 10px;
+    width: 200px;   
+}
+
+.submit{
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.tapimage{
+    height: 120px;
+}
+
+.button{
+    margin: 5px;
+    padding: 2px;
+    border-radius: 10px;
+    width: 70px;
+}
+
+.button:hover{
+    background: red;
+    color: white;
+}
+
+
