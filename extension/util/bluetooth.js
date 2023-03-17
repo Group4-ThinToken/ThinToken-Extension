@@ -47,8 +47,8 @@ async function listenToStatus(tokenService) {
   return _characteristic;
 }
 
-let connectBtn = document.querySelector("#connectBtn");
-connectBtn.addEventListener("click", async (ev) => {
-  const service = await requestThinTokenReaderService();
-  const statusListener = await listenToStatus(service);
-});
+// let connectBtn = document.querySelector("#connectBtn");
+// connectBtn.addEventListener("click", async (ev) => {
+//   const service = await requestThinTokenReaderService();
+//   const statusListener = await listenToStatus(service);
+// });

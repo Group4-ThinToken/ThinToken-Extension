@@ -4,8 +4,9 @@
     "manifest_version": 3,
     "content_scripts": [
         {
-          "matches": ["https://*.google.com/*"],
+          "matches": ["https://accounts.google.com/signin/v2/challenge/totp?*"],
           "js": [
+            "./util/bluetooth.js",
             "content.js"
           ]
         }
