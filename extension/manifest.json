@@ -10,11 +10,7 @@
           ]
         }
       ],
-    "options_ui":{
-    
-      "page":"extButton.html"
-    },
     "action": {
-      "default_popup": "extButton.html"
+      "default_popup": "./Popup/popup.html"
     }
   }

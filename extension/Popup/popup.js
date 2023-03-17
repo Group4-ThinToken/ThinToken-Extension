@@ -1,4 +1,4 @@
-var b = {}
+var b = {};
 
 if (typeof browser == "undefined") {
   console.log("Chromium");
@@ -8,11 +8,10 @@ if (typeof browser == "undefined") {
   Object.assign(b, browser);
 }
 
-
 let connectBtn = document.querySelector("#buttonid");
 connectBtn.addEventListener("click", (event) => {
   console.log("Click!");
-  b.tabs.create({ url: "landingPage.html" })
+  b.tabs.create({ url: "../LandingPage/landingPage.html" });
 });
 // let connectbtn2 = document.querySelector("#buttonid2");
 // connectbtn2.addEventListener("click", (event) => {
