@@ -12,9 +12,9 @@
       ],
     "options_ui":{
     
-      "page":"addForm.html"
+      "page":"extButton.html"
     },
     "action": {
-      "default_popup": "addForm.html"
+      "default_popup": "extButton.html"
     }
   }
