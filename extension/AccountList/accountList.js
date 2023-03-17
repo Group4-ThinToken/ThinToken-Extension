@@ -1,55 +1,59 @@
-function createAccountCard(account) {
-    let accountCard = document.createElement("div");
-    accountCard.classList.add("accountCard");
-
-    let icon = document.createElement("img");
-    icon.src = account.icon;
-    icon.classList.add("accountIcon");
-    accountCard.appendChild(icon);
-
-    let accountName = document.createElement("div");
+function getIconClass(accountName) {
+    const iconClasses = {
+      Facebook: "fab fa-facebook",
+      Google: "fab fa-google",
+      Twitter: "fab fa-twitter",
+    };
+  
+    return iconClasses[accountName] || "fas fa-question-circle";
+  }
+  
+  function createAccountCard(account) {
+    const card = document.createElement("div");
+    card.className = "accountCard";
+  
+    const iconContainer = document.createElement("div");
+    iconContainer.className = "icon";
+    const icon = document.createElement("i");
+    icon.className = getIconClass(account.accountName);
+    iconContainer.appendChild(icon);
+    card.appendChild(iconContainer);
+  
+    const accountName = document.createElement("div");
+    accountName.className = "accountName";
     accountName.textContent = account.accountName;
-    accountName.classList.add("accountName");
-    accountCard.appendChild(accountName);
-
-    let accountEmail = document.createElement("div");
+    card.appendChild(accountName);
+  
+    const accountEmail = document.createElement("div");
+    accountEmail.className = "accountEmail";
     accountEmail.textContent = account.accountEmail;
-    accountEmail.classList.add("accountEmail");
-    accountCard.appendChild(accountEmail);
-
-    let accountType = document.createElement("div");
-    accountType.textContent = "2FA";
-    accountType.classList.add("accountType");
-    accountCard.appendChild(accountType);
-
-    return accountCard;
-}
-
-function displayAccounts(accounts) {
-    const accountList = document.getElementById("accountlisting");
-
-    for (let account of accounts) {
-        let accountCard = createAccountCard(account);
-        accountList.appendChild(accountCard);
+    card.appendChild(accountEmail);
+  
+    return card;
+  }
+  
+  function displayAccounts(accounts) {
+    const accountListing = document.getElementById("accountlisting");
+    accounts.forEach(account => {
+      const accountCard = createAccountCard(account);
+      accountListing.appendChild(accountCard);
+    });
+  }
+  
+  const accounts = [
+    {
+      accountName: "Facebook",
+      accountEmail: "example@facebook.com",
+    },
+    {
+      accountName: "Google",
+      accountEmail: "example@google.com",
+    },
+    {
+      accountName: "Twitter",
+      accountEmail: "example@twitter.com",
     }
-}
-
-const accounts = [
-    {
-        accountName: "Facebook",
-        accountEmail: "example@facebook.com",
-        icon: "https://path/to/facebook/icon.png"
-    },
-    {
-        accountName: "Google",
-        accountEmail: "example@google.com",
-        icon: "https://path/to/google/icon.png"
-    },
-    {
-        accountName: "Twitter",
-        accountEmail: "example@twitter.com",
-        icon: "https://path/to/twitter/icon.png"
-    },
-];
-
-displayAccounts(accounts);
+  ];
+  
+  displayAccounts(accounts);
+  
