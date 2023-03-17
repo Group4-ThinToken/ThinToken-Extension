@@ -11,9 +11,10 @@
         }
       ],
     "options_ui":{
-      "page":"optionsPage.html"
+    
+      "page":"addForm.html"
     },
     "action": {
-      "default_popup": "optionsPage.html"
+      "default_popup": "addForm.html"
     }
   }
