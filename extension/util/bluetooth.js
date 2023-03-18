@@ -34,21 +34,39 @@ async function requestThinTokenReaderService() {
   return _tokenService;
 }
 
-async function listenToStatus(tokenService) {
-  const statusCharacteristicUuid = "49a2d591-16b6-4401-a328-cb9e93b3c767";
-  let _characteristic = await tokenService.getCharacteristic(statusCharacteristicUuid);
-  console.log(_characteristic);
+// async function listenToStatus(tokenService) {
+//   let _characteristic = await tokenService.getCharacteristic(BT.STATUS_CHARACTERISTIC);
+//   console.log(_characteristic);
+//   _characteristic.startNotifications();
+//   _characteristic.addEventListener("characteristicvaluechanged", (ev) => {
+//     console.log(ev.target.value);
+//   });
+//   console.log(`Listening for status notifications from ${tokenService.device.name}`);
+
+//   return _characteristic;
+// }
+
+// async function listenToOtp(tokenService) {
+//   let _characteristic = await tokenService.getCharacteristic(BT.OTP_CHARACTERISTIC);
+//   _characteristic.startNotifications();
+//   _characteristic.addEventListener
+// }
+
+async function btListen(tokenService, characteristic, handler) {
+  let _characteristic = await tokenService.getCharacteristic(characteristic);
   _characteristic.startNotifications();
   _characteristic.addEventListener("characteristicvaluechanged", (ev) => {
-    console.log(ev.target.value);
+    handler(ev.target.value);
   });
-  console.log(`Listening for status notifications from ${tokenService.device.name}`);
-
-  return _characteristic;
+  console.log(`Listening for ${tokenService.device.name} > ${characteristic}`);
 }
 
-// let connectBtn = document.querySelector("#connectBtn");
-// connectBtn.addEventListener("click", async (ev) => {
-//   const service = await requestThinTokenReaderService();
-//   const statusListener = await listenToStatus(service);
-// });
+async function updateReaderTime(tokenService) {
+  let _timeCharacteristic = await tokenService.getCharacteristic(BT.TIME_CHARACTERISTIC);
+  let now = Math.floor(Date.now() / 1000);
+  let buffer = new ArrayBuffer(4);
+  let view = new Uint32Array(buffer);
+  view[0] = now;
+
+  _timeCharacteristic.writeValueWithResponse(buffer);
+}

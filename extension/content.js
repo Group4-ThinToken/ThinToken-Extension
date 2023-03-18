@@ -51,12 +51,42 @@ function renderConnectBtn() {
   return thinTokenBtnWrapper;
 }
 
+// Function takes string
+function enterTotp(otp) {
+  const totpField = document.querySelector("#totpPin");
+
+  totpField.value = otp;
+  console.log(totpField.value);
+  document.querySelector("#totpNext").click();
+}
+
 function main() {
   console.log("Hello from content.js");
   const thinTokenBtn = renderConnectBtn();
 
-  thinTokenBtn.addEventListener("click", (ev) => {
-    requestThinTokenReaderService();
+  thinTokenBtn.addEventListener("click", async (ev) => {
+    // const totpField = document.querySelector("#totpPin");
+    // totpField.value = "11111";
+    // let nextButton = document.querySelector("#totpNext");
+    // nextButton.click();
+    // ======
+
+    let thinTokenService = await requestThinTokenReaderService();
+    updateReaderTime(thinTokenService);
+
+    btListen(thinTokenService, BT.STATUS_CHARACTERISTIC, (value) => {
+      console.log("STATUS:");
+      console.log(value);
+    });
+
+    btListen(thinTokenService, BT.OTP_CHARACTERISTIC, (value) => {
+      if (value.byteLength != 0) {
+        console.log("OTP:")
+        console.log(value.buffer);
+
+        enterTotp(new Uint32Array(value.buffer)[0].toString().padStart(6, "0"));
+      }
+    });
   });
 }
 

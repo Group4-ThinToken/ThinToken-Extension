@@ -6,6 +6,7 @@
         {
           "matches": ["https://accounts.google.com/signin/v2/challenge/totp?*"],
           "js": [
+            "constants.js",
             "./util/bluetooth.js",
             "content.js"
           ]
