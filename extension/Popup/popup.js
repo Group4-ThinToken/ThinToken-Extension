@@ -16,5 +16,5 @@ connectBtn.addEventListener("click", (event) => {
 // let connectbtn2 = document.querySelector("#buttonid2");
 // connectbtn2.addEventListener("click", (event) => {
 //   console.log("Click!");
-//   b.tabs.update( undefined, { url: "addForm.html" })
+//   b.tabs.update( undefined, { url: "landingPage.html" })
 // });
