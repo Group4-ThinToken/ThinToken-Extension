@@ -1,27 +1,98 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow: hidden;
+  width: 100vw;
+}
+
+body {
+  height: auto;
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.header {
+  background-color: lightgray;
+  width: 100%;
+  height: 10%;
+  padding: 0px 20px;
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header h1 {
+  font-family: "Kanit", sans-serif;
+  align-self: center;
+  font-size: xx-large;
+}
+
+.nav {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  margin: 0px 20px;
+}
+
+.nav li {
+  display: block;
+  list-style: none;
+  position: relative;
+}
+
+.nav li a {
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: medium;
+  color: black;
+}
+
+.nav li::after {
+  content: "";
+  height: 3px;
+  width: 0%;
+  background: red;
+  position: absolute;
+  left: 0;
+  bottom: -10px;
+  transition: 0.5s;
+}
+
+.nav li:hover::after {
+  width: 100%;
+}
+
 .accountlist {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .accountCard {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 200px;
-    padding: 10px;
-    margin: 10px;
-  }
-  
-  .accountCard .icon {
-    font-size: 48px;
-    margin-bottom: 10px;
-  }
-  
-  .accountCard .accountName,
-  .accountCard .accountEmail {
-    margin-bottom: 5px;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.accountCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  width: 200px;
+  padding: 10px;
+  margin: 10px;
+}
+
+.accountCard .icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+  border-radius: full;
+}
+
+.accountCard .accountName,
+.accountCard .accountEmail {
+  margin-bottom: 5px;
+}

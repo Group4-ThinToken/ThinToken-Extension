@@ -52,7 +52,12 @@ function getIconClass(accountName) {
     {
       accountName: "Twitter",
       accountEmail: "example@twitter.com",
+    },
+    {
+      accountName: "Twitter",
+      accountEmail: "example@twitter.com",
     }
+
   ];
   
   displayAccounts(accounts);
