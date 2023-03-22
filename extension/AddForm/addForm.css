@@ -5,7 +5,6 @@
 
 html, body{
     overflow: hidden;
-    width: 100vw;
 
 }
 
@@ -82,29 +81,35 @@ body{
     padding-bottom: 3px;
 }
 
-.main h1{
-    text-align: center;
-}
-
-.innercontainer{
+.container{
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 15px;
+    padding: 50px 120px;
 }
 
 .addkey{
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 15px;
+    
+}
+
+.addkey h1{
+    text-align: center;
+    font-size: 60px;
 }
 
 .inputbox{
     margin-left: 13px;
     padding: 5px;
     border-radius: 10px;
-    width: 200px;   
+    width: 500px;
+    height: 35px;   
 }
 
 .submit{
@@ -113,18 +118,21 @@ body{
     align-items: end;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding: 10px 15px;
 }
 
 .tapimage{
-    height: 120px;
+    height: 400px;
 }
 
 .button{
     margin: 5px;
-    padding: 2px;
+    padding: 10px;
     border-radius: 10px;
-    width: 70px;
+    width: 200px;
+    height: 50px;
+    font-size: 20px;
+    text-align: center;
 }
 
 .button:hover{

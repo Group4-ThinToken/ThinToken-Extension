@@ -18,16 +18,21 @@ function getIconClass(accountName) {
     icon.className = getIconClass(account.accountName);
     iconContainer.appendChild(icon);
     card.appendChild(iconContainer);
+
+    const accountContainer = document.createElement("div");
+    accountContainer.className = "accountContainer";
   
     const accountName = document.createElement("div");
     accountName.className = "accountName";
     accountName.textContent = account.accountName;
-    card.appendChild(accountName);
+    accountContainer.appendChild(accountName);
   
     const accountEmail = document.createElement("div");
     accountEmail.className = "accountEmail";
     accountEmail.textContent = account.accountEmail;
-    card.appendChild(accountEmail);
+    accountContainer.appendChild(accountEmail);
+
+    card.appendChild(accountContainer);
   
     return card;
   }
@@ -48,10 +53,6 @@ function getIconClass(accountName) {
     {
       accountName: "Google",
       accountEmail: "example@google.com",
-    },
-    {
-      accountName: "Twitter",
-      accountEmail: "example@twitter.com",
     },
     {
       accountName: "Twitter",

@@ -69,30 +69,76 @@ body {
   width: 100%;
 }
 
+.main{
+  margin: 30px;
+}
 .accountlist {
   display: flex;
   flex-direction: column;
+  margin-left: 10px;
+  overflow: auto;
+}
+
+.accountOptions{
+  display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: space-between;
+  margin: 0px 10px;
+}
+
+.accountNumber{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.accountNumber h1{
+  font-size: 20px;
+  font-weight: 300;
+}
+
+.button{
+  margin: 5px;
+  padding: 0px 4px;
+  border-radius: 10px;
+  width: 180px;
+  height: 30px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.button:hover{
+  background: red;
+  color: white;
 }
 
 .accountCard {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: left;
   align-items: center;
   border: 1px solid #ccc;
   border-radius: 10px;
-  width: 200px;
+  width: 400px;
   padding: 10px;
   margin: 10px;
+  gap: 10px;
+  background-color: #f0f0f0a4;
+  box-shadow: 0px 7px 3px  #b8b8b8;
+}
+
+.accountContainer{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .accountCard .icon {
-  font-size: 48px;
-  margin-bottom: 10px;
-  border-radius: full;
+  font-size: 55px;
 }
 
 .accountCard .accountName,
 .accountCard .accountEmail {
-  margin-bottom: 5px;
 }
