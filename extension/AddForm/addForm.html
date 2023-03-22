@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="addForm.css">
+    <link rel="stylesheet" href="../AddForm/addForm.css">
 </head>
 <body>
     <div class="header"></div>
@@ -13,8 +13,8 @@
     <label for="Open" class="icon"></label>
     <div id="sidebarMenu">
         <ul class="nav">
-            <li><a href="/extension/landingPage.html">Account List</a></li>
-            <li><a href="#">Add Account</a></li>
+            <li><a id="navTo-landing-page" href="../LandingPage/landingPage.html">Account List</a></li>
+            <li><a id="navTo-add-account" href="#">Add Account</a></li>
         </ul>
     </div>
 
@@ -22,15 +22,15 @@
         <div class="innercontainer">
             <div class="addkey">
                 <h1> Enter Account Details </h1>
-                <input class="inputbox" placeholder="Account">
-                <input class="inputbox" placeholder="Key">
+                <input id="secret" class="inputbox" placeholder="Key">
+                <input id="accountName" class="inputbox" placeholder="Account">
             </div>
-            <div class="submit">
-                <img class="tapimage" src="tap.png" alt="tap RFID image" >
+            <div id="submit" class="submit">
+                <img class="tapimage" src="../LandingPage/tap.png" alt="tap RFID image" >
                 <input class="button" type="submit" value="+ Add"  >
             </div>
         </div>
-        
     </div>
+    <script type="text/javascript" src="../AddForm/addForm.js"></script>
 </body>
 </html>

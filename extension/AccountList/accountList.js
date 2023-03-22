@@ -32,10 +32,10 @@ function createAccountCard(account) {
   return card;
 }
 
-function displayAccounts(accounts) {
-  const accountListing = document.getElementById("accountlisting");
+function displayAccounts(accounts, shadowRoot) {
+  const accountListing = shadowRoot.getElementById("accountlisting");
   accounts.forEach(account => {
-    const accountCard = createAccountCard(account);
+    const accountCard = createAccountCard(account, shadowRoot);
     accountListing.appendChild(accountCard);
   });
 }
@@ -55,4 +55,6 @@ const accounts = [
   }
 ];
 
-displayAccounts(accounts);
+function onAccountListLoaded(shadowRoot) {
+  displayAccounts(accounts, shadowRoot);
+}
