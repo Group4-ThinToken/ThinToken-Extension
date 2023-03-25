@@ -5,68 +5,72 @@
 
 html, body{
     overflow: hidden;
-    width: 430px;
 
 }
 
 body{
     height: auto;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: sans-serif;
     margin: 0;
     padding: 0;
-    /* background-color: */
 }
 
 .header{
     background-color:lightgray ;
     width: 100%;
-    height: 35px;
-    position: fixed;
+    height: 10%;
+    padding: 0px 20px;
+    position: relative;
     z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
 }
 
-#sidebarMenu{
-    height: 100%;
-    position: fixed;
-    left:0;
-    top:0;
-    width: 40%;
-    margin-top: 20px;
-    background-color: aqua;
-    transform: translate(-100%);
-    transition: transform 300ms ease-in-out;
+.header h1{
+    font-family: 'Kanit', sans-serif;
+    align-self: center;
+    font-size: xx-large;
 
 }
 
 .nav{
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    margin: 0px 20px;
+}
+
+.nav li {
+    display: block;
     list-style: none;
-    padding: 5px;
+    position: relative;
 }
 
 .nav li a{
-    color:black;
-    display: block;
     text-decoration: none;
     text-transform: uppercase;
     font-weight: 700;
     font-size: medium;
-    padding-bottom: 10px;
-
+    color: black;
 }
 
-.icon{
-    width: 22px;
-    height: 22px;
+.nav li::after{
+    content: '';
+    height: 3px;
+    width: 0%;
+    background: red;
     position: absolute;
-    z-index: 20;
-    top:7.5px;
-    background-color: white;
-    cursor: pointer;
+    left: 0;
+    bottom: -10px;
+    transition: 0.5s;
 }
 
-#Open:checked ~ #sidebarMenu{
-    transform: translate(0px);
+.nav li:hover::after{
+    width: 100%;
 }
+
 
 .main{
 
@@ -77,29 +81,35 @@ body{
     padding-bottom: 3px;
 }
 
-.main h1{
-    text-align: center;
-}
-
-.innercontainer{
+.container{
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 15px;
+    padding: 50px 120px;
 }
 
 .addkey{
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 15px;
+    
+}
+
+.addkey h1{
+    text-align: center;
+    font-size: 60px;
 }
 
 .inputbox{
     margin-left: 13px;
     padding: 5px;
     border-radius: 10px;
-    width: 200px;   
+    width: 500px;
+    height: 35px;   
 }
 
 .submit{
@@ -108,18 +118,21 @@ body{
     align-items: end;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding: 10px 15px;
 }
 
 .tapimage{
-    height: 120px;
+    height: 400px;
 }
 
 .button{
     margin: 5px;
-    padding: 2px;
+    padding: 10px;
     border-radius: 10px;
-    width: 70px;
+    width: 200px;
+    height: 50px;
+    font-size: 20px;
+    text-align: center;
 }
 
 .button:hover{
