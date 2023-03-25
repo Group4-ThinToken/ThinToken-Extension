@@ -23,6 +23,7 @@ const componentNameScripts = {
 };
 
 window.addEventListener("load", () => {
+  history.replaceState({ page: "landing-page" }, "unused", "?component=landing-page");
   main();
 });
 
@@ -64,6 +65,10 @@ async function main() {
     define(componentHtmls[i], componentNames[i]);
   }
 
+  window.addEventListener("popstate", (ev) => {
+    loadComponent(ev.state.page);
+  });
+
   mainFlow();
 }
 
@@ -76,17 +81,18 @@ function navHandler(componentName) {
     return;
   }
 
-  // history.pushState({
-  //   page: componentName
-  // }, "unused-param");
+  history.pushState({
+    page: componentName 
+  }, "unused-param", `?component=${componentName}`);
 
+  loadComponent(componentName);
+}
+
+function loadComponent(componentName) {
   let container = document.getElementById("app-container");
-  // Clear all contents of container
+  // Replace the tag in main.html
   container.innerHTML = `<${componentName} />`;
 
-  // // Add the new component
-  // let component = document.createElement(componentName);
-  // container.appendChild(component);
-
+  // Run the script file of the component
   componentNameScripts[componentName](document.querySelector(componentName).shadowRoot);
 }
