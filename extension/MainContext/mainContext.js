@@ -63,6 +63,8 @@ async function main() {
   for (i = 0; i < componentNames.length; i++) {
     define(componentHtmls[i], componentNames[i]);
   }
+
+  mainFlow();
 }
 
 function navHandler(componentName) {
