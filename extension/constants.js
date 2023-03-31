@@ -6,3 +6,15 @@ const BT = {
     OTP_CHARACTERISTIC: "5ae6d765-0752-428e-aa0c-201abe81f6ea",
     TIME_CHARACTERISTIC: "0ceb7679-13c5-41e6-a4e0-5ab441759a8d",
 };
+
+const STATUS = {
+    Ready: 0x00,
+    WriteFlowRequested: 0xF1,
+    WriteFlowReady: 0x01,
+    WriteFlowRequestFailed: 0x10,
+    WriteFlowEndRequest: 0x11,
+    WriteTagReady: 0x21,
+    TagRead: 0x02,
+    WriteSuccess: 0x03,
+    WriteFailed: 0x04
+};

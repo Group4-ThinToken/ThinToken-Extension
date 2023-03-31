@@ -34,24 +34,6 @@ async function requestThinTokenReaderService() {
   return _tokenService;
 }
 
-// async function listenToStatus(tokenService) {
-//   let _characteristic = await tokenService.getCharacteristic(BT.STATUS_CHARACTERISTIC);
-//   console.log(_characteristic);
-//   _characteristic.startNotifications();
-//   _characteristic.addEventListener("characteristicvaluechanged", (ev) => {
-//     console.log(ev.target.value);
-//   });
-//   console.log(`Listening for status notifications from ${tokenService.device.name}`);
-
-//   return _characteristic;
-// }
-
-// async function listenToOtp(tokenService) {
-//   let _characteristic = await tokenService.getCharacteristic(BT.OTP_CHARACTERISTIC);
-//   _characteristic.startNotifications();
-//   _characteristic.addEventListener
-// }
-
 async function btListen(tokenService, characteristic, handler) {
   let _characteristic = await tokenService.getCharacteristic(characteristic);
   _characteristic.startNotifications();
@@ -69,4 +51,8 @@ async function updateReaderTime(tokenService) {
   view[0] = now;
 
   _timeCharacteristic.writeValueWithResponse(buffer);
+}
+
+async function updateStatus(statusCharacteristic, newVal) {
+  return await statusCharacteristic.writeValueWithResponse(Uint8Array.of(newVal));
 }
