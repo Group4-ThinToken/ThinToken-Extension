@@ -27,7 +27,9 @@ function statusChangeHandler(val) {
 
     switch (val) {
       case STATUS.WriteTagReady:
-        navHandler("account-list");
+        if (history.state.page == "landing-page") {
+          navHandler("account-list");
+        }
         break;
     
       default:
@@ -40,6 +42,13 @@ async function beginWriteMode(thinToken) {
   const status = await thinToken.getCharacteristic(BT.STATUS_CHARACTERISTIC);
   let req = new Uint8Array(new ArrayBuffer(1));
   req[0] = STATUS.WriteFlowRequested;
+  status.writeValueWithResponse(req);
+}
+
+async function endWriteMode(thinToken) {
+  const status = await thinToken.getCharacteristic(BT.STATUS_CHARACTERISTIC);
+  let req = new Uint8Array(new ArrayBuffer(1));
+  req[0] = STATUS.WriteFlowEndRequest;
   status.writeValueWithResponse(req);
 }
 
