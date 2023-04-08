@@ -8,21 +8,12 @@
     <title>Document</title>
 </head>
 <body style="height: 100vh; margin: 0; padding: 0;">
-    <!-- Parent extension page context to share data across pages -->
-    <!-- <iframe src="../LandingPage/landingPage.html" frameborder="0" style="overflow:hidden;height:100%;width:100%" height="100%" width="100%"></iframe> -->
-    <!-- TODO: Might just use webcomponents and slots here instead of iframes -->
-    <!-- TODO2: Above todo is almost done, may prob nalang sa security policy -->
-    <div id="app-container">
-        <landing-page></landing-page>
-    </div>
+    <!-- Test runner -->
 
     <script src="../constants.js"></script>
     <script src="../util/encryption.js"></script>
     <script src="../util/bluetooth.js"></script>
-    <script src="../AddForm/addForm.js"></script>
-    <script src="../AccountList//matchers.js"></script>
-    <script src="../AccountList/accountList.js"></script>
-    <script src="mainContext.js"></script>
-    <script src="mainFlow.js"></script>
+    <script src="mainFlow.tests.js"></script>
+
 </body>
 </html>

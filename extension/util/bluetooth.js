@@ -54,5 +54,16 @@ async function updateReaderTime(tokenService) {
 }
 
 async function updateStatus(statusCharacteristic, newVal) {
+  console.log("Status sent:", newVal);
   return await statusCharacteristic.writeValueWithResponse(Uint8Array.of(newVal));
+}
+
+async function getThinTokenId(tokenService) {
+  let _characteristic = await tokenService.getCharacteristic(BT.ID_CHARACTERISTIC);
+  let id = await _characteristic.readValue();
+  id = new Uint8Array(id.buffer);
+  console.log(id)
+
+  let strId = id.join("");
+  return strId;
 }

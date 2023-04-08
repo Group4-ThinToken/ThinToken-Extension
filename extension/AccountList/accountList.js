@@ -1,8 +1,12 @@
+var global_accountList_shadowRoot;
+
 function getIconClass(accountName) {
   const iconClasses = {
     Facebook: "fab fa-facebook",
     Google: "fab fa-google",
     Twitter: "fab fa-twitter",
+    Microsoft: "fab fa-microsoft",
+    Yahoo: "fab fa-yahoo"
   };
 
   return iconClasses[accountName] || "fas fa-question-circle";
@@ -22,6 +26,7 @@ function createAccountCard(account) {
   const accountName = document.createElement("div");
   accountName.className = "accountName";
   accountName.textContent = account.accountName;
+
   card.appendChild(accountName);
 
   const accountEmail = document.createElement("div");
@@ -40,7 +45,8 @@ function displayAccounts(accounts, shadowRoot) {
   });
 }
 
-const accounts = [
+// Test data
+let accounts = [
   {
     accountName: "Facebook",
     accountEmail: "example@facebook.com",
@@ -56,5 +62,36 @@ const accounts = [
 ];
 
 function onAccountListLoaded(shadowRoot) {
+  global_accountList_shadowRoot = shadowRoot;
+  accounts = [];
   displayAccounts(accounts, shadowRoot);
+
+  shadowRoot.dispatchEvent(new CustomEvent("ThinToken_GetAccList", {
+    bubbles: true,
+    composed: true,
+  }));
+}
+
+function rawStringToAccObj(raw) {
+  let accountEmail = raw.split(",")[0];
+  let accountName;
+
+  matchers.forEach(m => {
+    let regex = new RegExp(m.find);
+    if (accountEmail.search(regex) !== "") {
+      accountName = m.name;
+    }
+  });
+
+  return {
+    accountEmail: accountEmail,
+    accountName: accountName
+  }
+}
+
+function appendAccount(raw) {
+  let accObj = rawStringToAccObj(raw);
+  accounts.push(accObj);
+
+  displayAccounts(accounts, global_accountList_shadowRoot);
 }
