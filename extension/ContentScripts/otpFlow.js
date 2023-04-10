@@ -30,25 +30,16 @@ function renderConnectBtn() {
   return thinTokenBtnWrapper;
 }
 
-function emailGetter() {
-  // TODO: Add matches to manifest to run content script
-  // in email field
-  const emailField = document.querySelector("input[type='email']");
-  
-  if (!emailField) {
-    return;
-  };
-
-  localStorage.setItem("lastLabel", emailField.value);
-}
-
-function findLabelSectorFromLocalStorage(tagId) {
-  let lastLabel = localStorage.getItem("lastLabel");
+async function findLabelSectorFromLocalStorage(tagId) {
+  // let lastLabel = localStorage.getItem("lastLabel");
+  let lastLabel = await b.storage.local.get("lastLabel");
   if (!lastLabel) {
     return;
   }
   
-  let localKeyIvObject = JSON.parse(localStorage.getItem(tagId));
+  // let localKeyIvObject = JSON.parse(localStorage.getItem(tagId));
+  let localKeyIvObject = await b.storage.local.get(tagId);
+  localKeyIvObject = localKeyIvObject[tagId];
   let sector = localKeyIvObject[lastLabel];
   return sector;
 }
@@ -66,8 +57,6 @@ function main() {
   console.log("Hello from content.js");
   const thinTokenBtn = renderConnectBtn();
 
-  emailGetter();
-
   thinTokenBtn.addEventListener("click", async (ev) => {
     // const totpField = document.querySelector("#totpPin");
     // totpField.value = "11111";
@@ -76,14 +65,14 @@ function main() {
     // ======
 
     let thinTokenService = await requestThinTokenReaderService();
+    let statusCharacteristic = thinTokenService.getCharacteristic(BT.STATUS_CHARACTERISTIC);
     updateReaderTime(thinTokenService);
-    updateStatus(BT.STATUS_CHARACTERISTIC, STATUS.OtpRequested);
-
+    updateStatus(await statusCharacteristic, STATUS.OtpRequested);
 
     btListen(thinTokenService, BT.STATUS_CHARACTERISTIC, (value) => {
       console.log("STATUS:");
       console.log(value);
-      statusChangeHandler(val, thinTokenService);
+      statusChangeHandler(val);
     });
 
     btListen(thinTokenService, BT.OTP_CHARACTERISTIC, (value) => {
@@ -97,7 +86,9 @@ function main() {
   });
 }
 
-function statusChangeHandler(val, thinToken) {
+// TODO: Use 
+
+function statusChangeHandler(val) {
   if (val.byteLength != 0) {
     val = new Uint8Array(val.buffer);
     val = val[0];
