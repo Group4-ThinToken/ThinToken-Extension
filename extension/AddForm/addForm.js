@@ -1,8 +1,9 @@
 function onAddFormLoaded(shadowRoot) {
-  console.log("Add form loaded");
   const secretField = shadowRoot.querySelector("#secret");
   const accountField = shadowRoot.querySelector("#accountName");
   const addBtn = shadowRoot.querySelector("#addBtn");
+
+  console.log("Add form loaded");
 
   addBtn.addEventListener("click", () => {
     console.log(accountField.value);

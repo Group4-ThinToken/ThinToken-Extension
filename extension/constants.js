@@ -21,5 +21,7 @@ const STATUS = {
     WriteFailed: 0x04,
     ReadQueueEmpty: 0x05,
     ReadAllRequested: 0x06,
-    MutexLocked: 0x07
+    MutexLocked: 0x07,
+    OtpSuccess: 0x08,
+    OtpFailed: 0x18
 };

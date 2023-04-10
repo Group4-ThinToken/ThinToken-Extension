@@ -58,6 +58,19 @@ async function updateStatus(statusCharacteristic, newVal) {
   return await statusCharacteristic.writeValueWithResponse(Uint8Array.of(newVal));
 }
 
+async function requestSector(tokenService, sector, isOtpRequest) {
+  // First byte: sector
+  // Second byte: FF if requesting otp 00 if not
+  let _sectorCharacteristic = await tokenService.getCharacteristic(BT.SECTOR_CHARACTERISTIC);
+
+  let buffer = new ArrayBuffer(2);
+  let reqData = new Uint8Array(buffer);
+  reqData[0] = sector;
+  reqData[1] = isOtpRequest ? 0xFF : 0x00;
+
+  _sectorCharacteristic.writeValueWithResponse(buffer);
+}
+
 async function getThinTokenId(tokenService) {
   let _characteristic = await tokenService.getCharacteristic(BT.ID_CHARACTERISTIC);
   let id = await _characteristic.readValue();

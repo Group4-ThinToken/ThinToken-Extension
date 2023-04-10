@@ -39,6 +39,7 @@ function createAccountCard(account) {
 
 function displayAccounts(accounts, shadowRoot) {
   const accountListing = shadowRoot.getElementById("accountlisting");
+  accountListing.innerHTML = "";
   accounts.forEach(account => {
     const accountCard = createAccountCard(account, shadowRoot);
     accountListing.appendChild(accountCard);

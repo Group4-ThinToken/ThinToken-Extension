@@ -31,12 +31,12 @@ async function bluetoothSetup() {
     }, 200);
   });
 
-  beginWriteMode(thinToken);
-
   const appContainer = document.querySelector("#app-container");
-  appContainer.addEventListener("ThinToken_FormDone", (ev) => {
-    addData(thinToken, ev.detail.label, ev.detail.secret);
+  appContainer.addEventListener("ThinToken_FormDone", async (ev) => {
+    await beginWriteMode(thinToken);
+    addData(thinToken, ev.detail.label, ev.detail.secret)
   });
+
 
   appContainer.addEventListener("ThinToken_GetAccList", async (ev) => {
     await requestAccountData(thinToken);
@@ -73,11 +73,16 @@ function statusChangeHandler(val, thinToken) {
     switch (val) {
       case STATUS.TagRead:
         generateAndStoreKey(thinToken);
-        break;
-      case STATUS.WriteTagReady:
         if (history.state.page == "landing-page") {
           navHandler("account-list");
         }
+        break;
+      case STATUS.WriteSuccess:
+        window.alert("Account added succefully");
+        break;
+      case STATUS.WriteFailed:
+        window.alert("Not enough space in ThinToken");
+      case STATUS.WriteTagReady:
         break;
       case STATUS.ReadQueueEmpty:
         if (history.state.page == "account-list") {
@@ -99,13 +104,15 @@ function statusChangeHandler(val, thinToken) {
 }
 
 async function beginWriteMode(thinToken) {
+  console.log("Begin write mode");
   const status = await thinToken.getCharacteristic(BT.STATUS_CHARACTERISTIC);
   let req = new Uint8Array(new ArrayBuffer(1));
   req[0] = STATUS.WriteFlowRequested;
-  status.writeValueWithResponse(req);
+  await status.writeValueWithResponse(req);
 }
 
 async function endWriteMode(thinToken) {
+  console.log("End write mode");
   const status = await thinToken.getCharacteristic(BT.STATUS_CHARACTERISTIC);
   let req = new Uint8Array(new ArrayBuffer(1));
   req[0] = STATUS.WriteFlowEndRequest;
@@ -119,23 +126,26 @@ async function addData(thinToken, label, secret) {
   console.log(label);
   console.log(secret);
 
+  if (label == "") {
+    window.alert("Label cannot be empty");
+    return;
+  }
+
+  if (secret == "") {
+    window.alert("Secret cannot be empty");
+    return;
+  }
+
   let tagId = await getThinTokenId(thinToken);
 
-  // let rawKey = generateAes256Key();
-  // let key = window.crypto.subtle.importKey(
-  //   "raw",
-  //   rawKey,
-  //   "AES-GCM",
-  //   true,
-  //   ["encrypt", "decrypt"]
-  // );
-  // let iv = window.crypto.getRandomValues(new Uint8Array(12));
   if (localStorage.getItem(tagId) == null) {
     window.alert("Unable to encrypt/decrypt tag.");
     return;
   }
 
-  let rawKey = JSON.parse(localStorage.getItem(tagId)).key;
+  let localKeyIvObject = JSON.parse(localStorage.getItem(tagId));
+
+  let rawKey = localKeyIvObject.key;
   console.log(rawKey);
   rawKey = new Uint8Array(Object.values(rawKey));
   console.log(rawKey);
@@ -146,8 +156,13 @@ async function addData(thinToken, label, secret) {
     true,
     ['encrypt', 'decrypt']
   );
-  let iv = JSON.parse(localStorage.getItem(tagId)).iv;
+  let iv = localKeyIvObject.iv;
   iv = new Uint8Array(Object.values(iv));
+
+  btListen(thinToken, BT.SECTOR_CHARACTERISTIC, (val) => {
+    localKeyIvObject[label] = val;
+    localStorage.setItem(tagId, JSON.stringify(localKeyIvObject));
+  });
 
   // Sanitize label and secret from ',' character
   label = label.replace(',', "%2C");
