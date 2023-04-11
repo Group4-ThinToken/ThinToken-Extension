@@ -1,3 +1,5 @@
+var global_needsOtpRequest = false;
+
 function renderConnectBtn() {
   // const totpNextBtn = document.querySelector("#totpNext");
   // const totpNextBtnWrapper = totpNextBtn.parentElement;
@@ -64,15 +66,14 @@ function main() {
     // nextButton.click();
     // ======
 
+    global_needsOtpRequest = true;
     let thinTokenService = await requestThinTokenReaderService();
-    let statusCharacteristic = thinTokenService.getCharacteristic(BT.STATUS_CHARACTERISTIC);
+    let lastLabel = await b.storage.local.get("lastLabel");
+    lastLabel = lastLabel["lastLabel"];
     updateReaderTime(thinTokenService);
-    updateStatus(await statusCharacteristic, STATUS.OtpRequested);
 
     btListen(thinTokenService, BT.STATUS_CHARACTERISTIC, (value) => {
-      console.log("STATUS:");
-      console.log(value);
-      statusChangeHandler(val);
+      statusChangeHandler(value, thinTokenService, lastLabel);
     });
 
     btListen(thinTokenService, BT.OTP_CHARACTERISTIC, (value) => {
@@ -88,7 +89,7 @@ function main() {
 
 // TODO: Use 
 
-function statusChangeHandler(val) {
+async function statusChangeHandler(val, thinToken, lastLabel) {
   if (val.byteLength != 0) {
     val = new Uint8Array(val.buffer);
     val = val[0];
@@ -98,6 +99,17 @@ function statusChangeHandler(val) {
 
     switch (val) {
       case STATUS.TagRead:
+        if (global_needsOtpRequest) {
+          try {
+            let statusCharacteristic = await thinToken.getCharacteristic(BT.STATUS_CHARACTERISTIC);
+            await updateStatus(statusCharacteristic, STATUS.OtpRequested);
+            await requestOtp(thinToken, lastLabel);
+            global_needsOtpRequest = false;
+          } catch (error) {
+            console.log(error);
+            global_needsOtpRequest = true;
+          }
+        }
         break;
       case STATUS.OtpFailed:
         window.alert("ThinToken OTP Request failed.");
@@ -110,6 +122,33 @@ function statusChangeHandler(val) {
         break;
     }
   }
+}
+
+async function requestOtp(thinToken, lastLabel) {
+  // To request OTP, write the following to
+  // sector characteristic:
+  // DATA: 0xXX, 0xFF
+  // where XX is where the sector of the requested OTP resides
+
+  // The secret payload will be structured this way
+  // DATA: [0:12) - IV
+  // DATA: [12:44) - Key
+  if (!lastLabel) throw Error("Last label is null.");
+
+  let _sectorCharacteristic = await thinToken.getCharacteristic(BT.SECTOR_CHARACTERISTIC);
+  let _secretCharacteristic = await thinToken.getCharacteristic(BT.SECRET_CHARACTERISTIC);
+
+  let tagId = await getThinTokenId(thinToken);
+  let localKeyIvObject = await b.storage.local.get(tagId);
+  localKeyIvObject = localKeyIvObject[tagId];
+
+  let secretPayload = new Uint8Array(localKeyIvObject.iv.concat(localKeyIvObject.key));
+  await _secretCharacteristic.writeValueWithoutResponse(secretPayload);
+
+  let sectorPayload = new Uint8Array(2);
+  sectorPayload[0] = localKeyIvObject[lastLabel];
+  sectorPayload[1] = 0xFF;
+  await _sectorCharacteristic.writeValueWithResponse(sectorPayload);
 }
 
 window.addEventListener("load", (ev) => {

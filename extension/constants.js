@@ -1,3 +1,13 @@
+var b = {};
+
+if (typeof browser == "undefined") {
+//   console.log("Chromium");
+  Object.assign(b, chrome);
+} else if (typeof chrome == "undefined") {
+//   console.log("Firefox");
+  Object.assign(b, browser);
+}
+
 const BT = {
     DEVICE_NAME: "ThinToken Reader",
     SERVICE_UUID: "5fcf031e-75a8-46a3-96da-3e9a818019b8",
@@ -22,6 +32,6 @@ const STATUS = {
     ReadQueueEmpty: 0x05,
     ReadAllRequested: 0x06,
     MutexLocked: 0x07,
-    OtpSuccess: 0x08,
+    OtpRequested: 0x08,
     OtpFailed: 0x18
 };

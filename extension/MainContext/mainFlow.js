@@ -48,23 +48,30 @@ async function bluetoothSetup() {
 async function generateAndStoreKey(thinToken) {
   let tagId = await getThinTokenId(thinToken);
 
-  let existingKey = localStorage.getItem(tagId);
+  // let existingKey = localStorage.getItem(tagId);
+  let existingKey = await b.storage.local.get(tagId);
 
-  if (existingKey == null) {
+  if (Object.keys(existingKey).length == 0) {
     let rawKey = await generateAes256Key();
     rawKey = new Uint8Array(rawKey);
     let obj = {
       id: tagId,
-      iv: window.crypto.getRandomValues(new Uint8Array(12)),
-      key: rawKey
+      iv: Array.from(window.crypto.getRandomValues(new Uint8Array(12))),
+      key: Array.from(rawKey)
     };
-    localStorage.setItem(tagId, JSON.stringify(obj));
+    console.log(obj)
+    // localStorage.setItem(tagId, JSON.stringify(obj));
+    await b.storage.local.set({ [tagId]: obj });
+  } else {
+    console.log("Reusing existing key");
   }
 }
 
-function statusChangeHandler(val, thinToken) {
+async function statusChangeHandler(val, thinToken) {
   if (val.byteLength != 0) {
     val = new Uint8Array(val.buffer);
+    id = val.slice(1, 5).join("");
+    arg = val[5]; // Typically used for sector written to in writesuccess
     val = val[0];
     
     let statusName = Object.keys(STATUS).find(k => STATUS[k] === val);
@@ -78,6 +85,16 @@ function statusChangeHandler(val, thinToken) {
         }
         break;
       case STATUS.WriteSuccess:
+        let localKeyIvObject = await b.storage.local.get(id);
+        localKeyIvObject = localKeyIvObject[id];
+        let lastLabel = await b.storage.local.get("lastLabel");
+        lastLabel = lastLabel.lastLabel;
+        console.log(lastLabel);
+        console.log(localKeyIvObject);
+
+        localKeyIvObject[lastLabel] = arg;
+        b.storage.local.set({ [id]: localKeyIvObject });
+
         window.alert("Account added succefully");
         break;
       case STATUS.WriteFailed:
@@ -136,18 +153,24 @@ async function addData(thinToken, label, secret) {
     return;
   }
 
+  // Store label on local storage lastLabel
+  // so we can store sector data later
+  let lastLabelStore = b.storage.local.set({ lastLabel: label });
+
   let tagId = await getThinTokenId(thinToken);
 
-  if (localStorage.getItem(tagId) == null) {
+  // if (localStorage.getItem(tagId) == null) {
+  let localKeyIvObject = await b.storage.local.get(tagId);
+  if (Object.keys(localKeyIvObject).length == 0) {
     window.alert("Unable to encrypt/decrypt tag.");
     return;
   }
+  localKeyIvObject = localKeyIvObject[tagId]; // This is necessary because get returns {[tagId]: {...}}
 
-  let localKeyIvObject = JSON.parse(localStorage.getItem(tagId));
-
+  console.log(localKeyIvObject);
   let rawKey = localKeyIvObject.key;
   console.log(rawKey);
-  rawKey = new Uint8Array(Object.values(rawKey));
+  rawKey = new Uint8Array(rawKey);
   console.log(rawKey);
   let key = await window.crypto.subtle.importKey(
     "raw",
@@ -161,14 +184,18 @@ async function addData(thinToken, label, secret) {
 
   btListen(thinToken, BT.SECTOR_CHARACTERISTIC, (val) => {
     localKeyIvObject[label] = val;
-    localStorage.setItem(tagId, JSON.stringify(localKeyIvObject));
+    // localStorage.setItem(tagId, JSON.stringify(localKeyIvObject));
+    b.storage.local.set({ [tagId]: localKeyIvObject });
   });
 
   // Sanitize label and secret from ',' character
-  label = label.replace(',', "%2C");
-  secret = secret.replace(',', "%2C");
+  label = label.replaceAll(',', "%2C");
+  secret = secret.replaceAll(',', "%2C");
 
   let btMsg = label + "," + secret;
+  
+  btMsg = btMsg.replaceAll(' ', '');
+  btMsg += " "; // Add space at the end as a stop byte
   btMsg = new TextEncoder().encode(btMsg);
 
   // Encrypt btMsg
@@ -187,6 +214,7 @@ async function addData(thinToken, label, secret) {
   console.log("Sending to BT");
   const secretChar = await thinToken.getCharacteristic(BT.SECRET_CHARACTERISTIC);
   secretChar.writeValueWithoutResponse(btMsg);
+  await lastLabelStore;
 }
 
 //#endregion
@@ -237,9 +265,17 @@ async function otpValueChangeHandler(val, tagId) {
   val = val.subarray(0, lastIdx);
 
   // Decrypt val
-  let iv = Object.values(JSON.parse(localStorage.getItem(tagId)).iv);
+  let localKeyIvObject = await b.storage.local.get(tagId);
+  console.log(localKeyIvObject);
+  if (Object.keys(localKeyIvObject).length == 0) {
+    window.alert("Unable to decrypt ThinToken.");
+    throw Error("Unable to decrypt ThinToken.");
+  }
+  localKeyIvObject = localKeyIvObject[tagId];
+
+  let iv = localKeyIvObject.iv;
   iv = new Uint8Array(iv);
-  let rawKey = Object.values(JSON.parse(localStorage.getItem(tagId)).key);
+  let rawKey = localKeyIvObject.key;
   rawKey = new Uint8Array(rawKey);
 
   console.log(iv);
@@ -264,6 +300,7 @@ async function otpValueChangeHandler(val, tagId) {
     );
   } catch (error) {
     console.error(error);
+    throw error;
   }
   decrypted = new TextDecoder().decode(decrypted);
 
