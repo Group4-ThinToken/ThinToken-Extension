@@ -79,8 +79,10 @@ function rawStringToAccObj(raw) {
 
   matchers.forEach(m => {
     let regex = new RegExp(m.find);
-    if (accountEmail.search(regex) !== "") {
+    console.log("Search:", accountEmail.search(regex));
+    if (accountEmail.search(regex) !== -1) {
       accountName = m.name;
+      // console.log("accountName:", accountName);
     }
   });
 
