@@ -6,6 +6,7 @@
     {
       "matches": [
         "https://accounts.google.com/signin/v2/challenge/totp?*"
+
       ],
       "js": [
         "constants.js",
@@ -15,13 +16,24 @@
       ]
     }, {
       "matches": [
-        "https://accounts.google.com/v3/signin/*"
+        "https://accounts.google.com/v3/signin/*",
+        "https://login.live.com/login.srf?*"
       ],
       "js": [
         "constants.js",
         "./util/encryption.js",
         "./util/bluetooth.js",
         "./ContentScripts/preOtpFlow.js"
+      ]
+    }, {
+      "matches": [
+        "https://myaccount.google.com/two-step-verification/authenticator?*"
+      ],
+      "js": [
+        "constants.js",
+        "./util/encryption.js",
+        "./util/bluetooth.js",
+        "./ContentScripts/confirmFlow.js"
       ]
     }
   ],
