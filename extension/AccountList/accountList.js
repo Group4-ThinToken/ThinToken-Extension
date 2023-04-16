@@ -12,7 +12,7 @@ function getIconClass(accountName) {
   return iconClasses[accountName] || "fas fa-question-circle";
 }
 
-function createAccountCard(account) {
+function createAccountCard(account, shadowRoot) {
   const card = document.createElement("div");
   card.className = "accountCard";
 
@@ -33,6 +33,24 @@ function createAccountCard(account) {
   accountEmail.className = "accountEmail";
   accountEmail.textContent = account.accountEmail;
   card.appendChild(accountEmail);
+
+  const deleteBtn = document.createElement("div");
+  deleteBtn.className = "icon delete-icon";
+  const iconDel = document.createElement("i");
+  iconDel.className = "fa-solid fa-trash";
+  deleteBtn.appendChild(iconDel);
+  card.appendChild(deleteBtn);
+
+  deleteBtn.addEventListener("click", (ev) => {
+    console.log("Click");
+    shadowRoot.dispatchEvent(new CustomEvent("ThinToken_DeleteAcc", {
+      bubbles: true,
+      composed: true,
+      detail: {
+        label: account.accountEmail
+      }
+    }));
+  });
 
   return card;
 }

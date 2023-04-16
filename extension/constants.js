@@ -33,5 +33,6 @@ const STATUS = {
     ReadAllRequested: 0x06,
     MutexLocked: 0x07,
     OtpRequested: 0x08,
-    OtpFailed: 0x18
+    OtpFailed: 0x18,
+    DeleteRequest: 0x19
 };

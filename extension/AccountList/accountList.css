@@ -156,3 +156,15 @@ body {
 .accountCard .accountName,
 .accountCard .accountEmail {
 }
+
+.delete-icon {
+  cursor: pointer;
+  font-size: 32px !important;
+  margin-left: auto;
+  margin-right: 16px;
+  transition: 100ms;
+}
+
+.delete-icon:hover {
+  transform: scale(1.1);
+}

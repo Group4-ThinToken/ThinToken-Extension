@@ -17,7 +17,7 @@ const componentNames = [
 ];
 
 const componentNameScripts = {
-  "landing-page": () => {},
+  "landing-page": onLandingPageLoaded,
   "add-form": onAddFormLoaded,
   "account-list": onAccountListLoaded
 };
@@ -69,7 +69,7 @@ async function main() {
     loadComponent(ev.state.page);
   });
 
-  mainFlow();
+  onLandingPageLoaded(document.querySelector("landing-page").shadowRoot);
 }
 
 function navHandler(componentName) {

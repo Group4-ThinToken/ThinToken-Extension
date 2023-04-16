@@ -12,12 +12,17 @@ async function requestThinTokenReaderService() {
 
     _deviceReq.addEventListener('gattserverdisconnected', (ev) => {
       console.log("Bluetooth disconnected");
+
+      if (window) {
+        window.dispatchEvent(new CustomEvent("ThinToken_Disconnected"));
+      }
     });
 
     let _device = await _deviceReq.gatt.connect();
 
     _tokenService = await _device.getPrimaryService(primaryUuid);
 
+    window.dispatchEvent(new CustomEvent("ThinToken_Connected"));
   } catch (error) {
 
     console.error(error);
@@ -73,10 +78,10 @@ async function requestSector(tokenService, sector, isOtpRequest) {
 
 async function getThinTokenId(tokenService) {
   let _characteristic = await tokenService.getCharacteristic(BT.ID_CHARACTERISTIC);
-  let id = await _characteristic.readValue();
+  let id;
+  id = await _characteristic.readValue();
   id = new Uint8Array(id.buffer);
   console.log(id)
-
   let strId = id.join("");
   return strId;
 }

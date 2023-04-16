@@ -41,6 +41,40 @@ async function bluetoothSetup() {
   appContainer.addEventListener("ThinToken_GetAccList", async (ev) => {
     await requestAccountData(thinToken);
   });
+
+  appContainer.addEventListener("ThinToken_DeleteAcc", (ev) => {
+    deleteAccount(thinToken, ev.detail.label);
+  });
+}
+
+async function deleteAccount(thinToken, accountLabel) {
+  console.log("Delete called");
+  console.log(accountLabel);
+  let tagId;
+  try {
+    tagId = await getThinTokenId(thinToken);
+  } catch (error) {
+    await new Promise(resolve => setTimeout(resolve, 150));
+    tagId = await getThinTokenId(thinToken);
+  }
+
+  let localKeyIvObject = await b.storage.local.get(tagId);
+  localKeyIvObject = localKeyIvObject[tagId];
+  let sector = localKeyIvObject[accountLabel];
+
+  if (!localKeyIvObject || !sector) {
+    console.log(tagId);
+    console.log(localKeyIvObject);
+    console.log(sector);
+    throw Error("Account not found");
+  }
+
+  statusCharacteristic = await thinToken.getCharacteristic(BT.STATUS_CHARACTERISTIC);
+  let req = new Uint8Array(new ArrayBuffer(2));
+  req[0] = STATUS.DeleteRequest;
+  req[1] = sector;
+
+  await statusCharacteristic.writeValueWithResponse(req);
 }
 
 // Generates a key if there is no key for the tag

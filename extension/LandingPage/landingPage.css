@@ -105,7 +105,12 @@ body{
 }
 
 #instruction {
-    padding: 80px ;
+    padding: 80px;
+    transition: all 256ms;
+}
+
+#instruction.pre-animation {
+    opacity: 0;
 }
 
 #connectBtn{
