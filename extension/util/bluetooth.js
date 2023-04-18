@@ -76,12 +76,11 @@ async function requestSector(tokenService, sector, isOtpRequest) {
   _sectorCharacteristic.writeValueWithResponse(buffer);
 }
 
-async function getThinTokenId(tokenService) {
-  let _characteristic = await tokenService.getCharacteristic(BT.ID_CHARACTERISTIC);
-  let id;
-  id = await _characteristic.readValue();
-  id = new Uint8Array(id.buffer);
-  console.log(id)
-  let strId = id.join("");
-  return strId;
+async function getThinTokenId() {
+  let obj = await b.storage.local.get("currTagId");
+  return obj["currTagId"];
+}
+
+async function updateThinTokenId(id) {
+  await b.storage.local.set({ currTagId: id });
 }

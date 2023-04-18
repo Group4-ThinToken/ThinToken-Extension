@@ -135,6 +135,7 @@ async function statusChangeHandler(val, thinToken, lastLabel) {
             await updateStatus(statusCharacteristic, STATUS.OtpRequested);
             await requestOtp(thinToken, lastLabel);
             global_needsOtpRequest = false;
+            thinToken.device.gatt.disconnect();
           } catch (error) {
             console.log(error);
             global_needsOtpRequest = true;
@@ -168,7 +169,7 @@ async function requestOtp(thinToken, lastLabel) {
   let _sectorCharacteristic = await thinToken.getCharacteristic(BT.SECTOR_CHARACTERISTIC);
   let _secretCharacteristic = await thinToken.getCharacteristic(BT.SECRET_CHARACTERISTIC);
 
-  let tagId = await getThinTokenId(thinToken);
+  let tagId = await getThinTokenId();
   let localKeyIvObject = await b.storage.local.get(tagId);
   localKeyIvObject = localKeyIvObject[tagId];
 

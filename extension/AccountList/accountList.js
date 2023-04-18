@@ -89,6 +89,15 @@ function onAccountListLoaded(shadowRoot) {
     bubbles: true,
     composed: true,
   }));
+
+  shadowRoot.addEventListener("ThinToken_RenderAccountList", (ev) => {
+    console.log("Re-render event");
+    accounts = [];
+    shadowRoot.dispatchEvent(new CustomEvent("ThinToken_GetAccList", {
+      bubbles: true,
+      composed: true,
+    }));
+  });
 }
 
 function rawStringToAccObj(raw) {
@@ -114,5 +123,16 @@ function appendAccount(raw) {
   let accObj = rawStringToAccObj(raw);
   accounts.push(accObj);
 
+  displayAccounts(accounts, global_accountList_shadowRoot);
+}
+
+function removeAccountFromList(label) {
+  console.log("Remove from list");
+  console.log(accounts);
+  const idx = accounts.findIndex((a) => a.accountEmail === label);
+  if (idx > -1) {
+    accounts.splice(idx, 1);
+  }
+  console.log(accounts);
   displayAccounts(accounts, global_accountList_shadowRoot);
 }

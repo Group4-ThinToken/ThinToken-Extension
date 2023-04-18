@@ -16,7 +16,7 @@
       ]
     }, {
       "matches": [
-        "https://accounts.google.com/v3/signin/*",
+        "https://accounts.google.com/v3/signin/identifier*",
         "https://login.live.com/login.srf?*"
       ],
       "js": [

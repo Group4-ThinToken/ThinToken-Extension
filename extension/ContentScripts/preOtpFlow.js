@@ -6,7 +6,7 @@ function emailGetter() {
   if (!emailField) {
     return;
   };
-
+  console.log("Email field value", emailField.value);
   // localStorage.setItem("lastLabel", emailField.value);
   b.storage.local.set({ lastLabel: emailField.value });
 }
@@ -17,8 +17,16 @@ function main() {
   emailNextBtn.addEventListener("click", (ev) => {
     emailGetter();
   });
+
+  document.addEventListener("keyup", (ev) => {
+    if (ev.key == "Enter") {
+      emailGetter();
+      document.removeEventListener("keyup");
+    }
+  });
 }
 
 window.addEventListener("load", (ev) => {
+  console.log("Pre otp flow");
   main();
 });

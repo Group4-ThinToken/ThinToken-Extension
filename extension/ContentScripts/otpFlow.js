@@ -92,6 +92,7 @@ function main() {
 async function statusChangeHandler(val, thinToken, lastLabel) {
   if (val.byteLength != 0) {
     val = new Uint8Array(val.buffer);
+    id = val.slice(1, 5).join("");
     val = val[0];
     
     let statusName = Object.keys(STATUS).find(k => STATUS[k] === val);
@@ -102,6 +103,7 @@ async function statusChangeHandler(val, thinToken, lastLabel) {
         if (global_needsOtpRequest) {
           try {
             let statusCharacteristic = await thinToken.getCharacteristic(BT.STATUS_CHARACTERISTIC);
+            await updateThinTokenId(id);
             await updateStatus(statusCharacteristic, STATUS.OtpRequested);
             await requestOtp(thinToken, lastLabel);
             global_needsOtpRequest = false;
@@ -138,7 +140,7 @@ async function requestOtp(thinToken, lastLabel) {
   let _sectorCharacteristic = await thinToken.getCharacteristic(BT.SECTOR_CHARACTERISTIC);
   let _secretCharacteristic = await thinToken.getCharacteristic(BT.SECRET_CHARACTERISTIC);
 
-  let tagId = await getThinTokenId(thinToken);
+  let tagId = await getThinTokenId();
   let localKeyIvObject = await b.storage.local.get(tagId);
   localKeyIvObject = localKeyIvObject[tagId];
 

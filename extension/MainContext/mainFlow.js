@@ -1,3 +1,5 @@
+var global_didDeleteAccount = false;
+
 async function mainFlow() {
   const shadowRoot = document.querySelector("landing-page").shadowRoot;
   const connectBtn = shadowRoot.querySelector("#connectBtn");
@@ -18,7 +20,7 @@ async function bluetoothSetup() {
     console.log(val);
 
     setTimeout(() => {
-      getThinTokenId(thinToken)
+      getThinTokenId()
         .then((tagId) => {
           console.log("Done tagId");
           console.log(tagId);
@@ -44,6 +46,7 @@ async function bluetoothSetup() {
 
   appContainer.addEventListener("ThinToken_DeleteAcc", (ev) => {
     deleteAccount(thinToken, ev.detail.label);
+    global_didDeleteAccount = true;
   });
 }
 
@@ -52,10 +55,10 @@ async function deleteAccount(thinToken, accountLabel) {
   console.log(accountLabel);
   let tagId;
   try {
-    tagId = await getThinTokenId(thinToken);
+    tagId = await getThinTokenId();
   } catch (error) {
     await new Promise(resolve => setTimeout(resolve, 150));
-    tagId = await getThinTokenId(thinToken);
+    tagId = await getThinTokenId();
   }
 
   let localKeyIvObject = await b.storage.local.get(tagId);
@@ -69,18 +72,20 @@ async function deleteAccount(thinToken, accountLabel) {
     throw Error("Account not found");
   }
 
-  statusCharacteristic = await thinToken.getCharacteristic(BT.STATUS_CHARACTERISTIC);
+  let statusCharacteristic = await thinToken.getCharacteristic(BT.STATUS_CHARACTERISTIC);
   let req = new Uint8Array(new ArrayBuffer(2));
   req[0] = STATUS.DeleteRequest;
   req[1] = sector;
 
   await statusCharacteristic.writeValueWithResponse(req);
+
+  removeAccountFromList(accountLabel);
 }
 
 // Generates a key if there is no key for the tag
 // in localStorage. If a key already exists, does nothing
 async function generateAndStoreKey(thinToken) {
-  let tagId = await getThinTokenId(thinToken);
+  let tagId = await getThinTokenId();
 
   // let existingKey = localStorage.getItem(tagId);
   let existingKey = await b.storage.local.get(tagId);
@@ -113,6 +118,7 @@ async function statusChangeHandler(val, thinToken) {
 
     switch (val) {
       case STATUS.TagRead:
+        updateThinTokenId(id);
         generateAndStoreKey(thinToken);
         if (history.state.page == "landing-page") {
           navHandler("account-list");
@@ -129,7 +135,11 @@ async function statusChangeHandler(val, thinToken) {
         localKeyIvObject[lastLabel] = arg;
         b.storage.local.set({ [id]: localKeyIvObject });
 
-        window.alert("Account added succefully");
+        if (global_didDeleteAccount) {
+          window.alert("Account deleted succefully");
+        } else {
+          window.alert("Account added succefully");
+        }
         break;
       case STATUS.WriteFailed:
         window.alert("Not enough space in ThinToken");
@@ -191,7 +201,7 @@ async function addData(thinToken, label, secret) {
   // so we can store sector data later
   let lastLabelStore = b.storage.local.set({ lastLabel: label });
 
-  let tagId = await getThinTokenId(thinToken);
+  let tagId = await getThinTokenId();
 
   // if (localStorage.getItem(tagId) == null) {
   let localKeyIvObject = await b.storage.local.get(tagId);
