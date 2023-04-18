@@ -19,4 +19,18 @@ function onAddFormLoaded(shadowRoot) {
       }
     }));
   });
+
+  document.addEventListener("keyup", (ev) => {
+    if (ev.key == "Enter") {
+      // Rethrow event then listen on mainFlow.js
+      shadowRoot.dispatchEvent(new CustomEvent("ThinToken_FormDone", {
+        bubbles: true,
+        composed: true,
+        detail: {
+          label: accountField.value,
+          secret: secretField.value
+        }
+      }));
+    }
+  })
 }
