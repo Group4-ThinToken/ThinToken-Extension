@@ -69,13 +69,14 @@ async function main() {
     });
   });
 
-  let btContainer = shadow.querySelector("#bt-container");
+  let btContainer = document.querySelector("#bt-container");
   window.addEventListener("ThinToken_Connected", (ev) => {
     btContainer.classList.add(["bt-on"]);
   });
 
   window.addEventListener("ThinToken_Disconnected", (ev) => {
     btContainer.classList.remove(["bt-on"]);
+    navHandler("landing-page");
   });
 
   onLandingPageLoaded(document.querySelector("landing-page").shadowRoot);

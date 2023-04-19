@@ -3,8 +3,18 @@ var global_didDeleteAccount = false;
 async function mainFlow() {
   const shadowRoot = document.querySelector("landing-page").shadowRoot;
   const connectBtn = shadowRoot.querySelector("#connectBtn");
+  const btIcon = document.querySelector("#bt-toggle");
 
   connectBtn.addEventListener("click", bluetoothSetup);
+  btIcon.addEventListener("click", toggleBluetooth);
+}
+
+async function toggleBluetooth() {
+  if (!global_bluetoothDevice) {
+    bluetoothSetup();
+  } else {
+    btDisconnect();
+  }
 }
 
 async function bluetoothSetup() {

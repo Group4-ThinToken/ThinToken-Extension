@@ -1,3 +1,5 @@
+var global_bluetoothDevice;
+
 async function requestThinTokenReaderService() {
   let _tokenService;
   const primaryUuid = "5fcf031e-75a8-46a3-96da-3e9a818019b8";
@@ -19,6 +21,7 @@ async function requestThinTokenReaderService() {
     });
 
     let _device = await _deviceReq.gatt.connect();
+    global_bluetoothDevice = _device;
 
     _tokenService = await _device.getPrimaryService(primaryUuid);
 
@@ -37,6 +40,12 @@ async function requestThinTokenReaderService() {
 
   console.log(_tokenService);
   return _tokenService;
+}
+
+async function btDisconnect() {
+  console.log(global_bluetoothDevice);
+  global_bluetoothDevice.device.gatt.disconnect();
+  global_bluetoothDevice = null;
 }
 
 async function btListen(tokenService, characteristic, handler) {
