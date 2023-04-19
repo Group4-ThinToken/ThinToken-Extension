@@ -42,15 +42,6 @@ function define(html, componentTag) {
 
       var shadow = this.attachShadow({ mode: "open" });
       shadow.innerHTML = html;
-
-      let navBtns = shadow.querySelectorAll(".navLink");
-      navBtns.forEach(el => {
-        let splittedId = el.id.split("-");
-
-        el.addEventListener("click", (ev) => {
-          navHandler(`${splittedId[1]}-${splittedId[2]}`);
-        });
-      });
     }
   }
 
@@ -67,6 +58,24 @@ async function main() {
 
   window.addEventListener("popstate", (ev) => {
     loadComponent(ev.state.page);
+  });
+
+  let navBtns = document.querySelectorAll(".navLink");
+  navBtns.forEach(el => {
+    let splittedId = el.id.split("-");
+
+    el.addEventListener("click", (ev) => {
+      navHandler(`${splittedId[1]}-${splittedId[2]}`);
+    });
+  });
+
+  let btContainer = shadow.querySelector("#bt-container");
+  window.addEventListener("ThinToken_Connected", (ev) => {
+    btContainer.classList.add(["bt-on"]);
+  });
+
+  window.addEventListener("ThinToken_Disconnected", (ev) => {
+    btContainer.classList.remove(["bt-on"]);
   });
 
   onLandingPageLoaded(document.querySelector("landing-page").shadowRoot);

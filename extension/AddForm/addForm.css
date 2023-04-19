@@ -41,6 +41,7 @@ body{
     flex-direction: row;
     gap: 30px;
     margin: 0px 20px;
+    align-items: center;
 }
 
 .nav li {
@@ -73,6 +74,20 @@ body{
     width: 100%;
 }
 
+.nav button {
+    all: unset;
+    cursor: pointer;
+    font-size: 32px;
+    transition: 256ms;
+}
+
+.nav li.bt-on {
+    color: white;
+}
+
+.nav li.bt-on::after {
+    width: 100%;
+}
 
 .main{
 
