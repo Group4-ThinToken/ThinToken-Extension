@@ -27,7 +27,9 @@
       ]
     }, {
       "matches": [
-        "https://myaccount.google.com/two-step-verification/authenticator?*"
+        "https://myaccount.google.com/two-step-verification/authenticator?*",
+        "https://myaccount.google.com/u/2/two-step-verification/authenticator?*",
+        "https://login.yahoo.com/myaccount/security/*"
       ],
       "js": [
         "constants.js",

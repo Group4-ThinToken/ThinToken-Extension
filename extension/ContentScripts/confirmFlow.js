@@ -4,25 +4,6 @@ var hasMainRun = false;
 
 function renderConnectBtn() {
 
-  // const totpNextBtnWrapper = document.querySelectorAll("[data-id='dtOep']")[1].parentElement;
-  // const bottomBtnsContainer = totpNextBtnWrapper.parentElement;
-
-  // let thinTokenBtnWrapper = totpNextBtnWrapper.cloneNode(true);
-  // let thinTokenBtn = thinTokenBtnWrapper.querySelectorAll("[data-id='dtOep']")[1];
-  // console.log(thinTokenBtn);
-  // let thinTokenBtnText = thinTokenBtn.querySelector("span");
-  // thinTokenBtnWrapper.childNodes.forEach(element => {
-  //   element.id = "";
-  //   element.removeAttribute("jscontroller");
-  //   element.removeAttribute("jsaction");
-  //   element.removeAttribute("jsname");
-  // });
-  // thinTokenBtnText.innerText = "ThinToken";
-
-  // bottomBtnsContainer.insertBefore(thinTokenBtnWrapper, bottomBtnsContainer.children[1]);
-
-  // return thinTokenBtnWrapper;
-
   let cancelSpan = Array.from(document.querySelectorAll("button > span"))
                   .filter(el => el.innerText == "Cancel");
   cancelSpan = cancelSpan[cancelSpan.length - 1];
@@ -47,6 +28,29 @@ function renderConnectBtn() {
   return thinTokenContainer;
 }
 
+function renderConnectDefaultBtn() {
+  let thinTokenContainer = document.createElement("div");
+  let connectBtn = document.createElement("button");
+  connectBtn.innerText = "ThinToken";
+
+  thinTokenContainer.style.position = "absolute";
+  thinTokenContainer.style.left = "5vw";
+  thinTokenContainer.style.top = "15vh";
+  thinTokenContainer.style.zIndex = "10000";
+
+  connectBtn.style.backgroundColor = "#FF4F63";
+  connectBtn.style.height = "30px";
+  connectBtn.style.padding = "0px 4px";
+  connectBtn.style.borderRadius = "10px";
+  connectBtn.style.fontSize = "20px";
+  connectBtn.style.cursor = "pointer";
+
+  thinTokenContainer.appendChild(connectBtn);
+  document.querySelector("[class*='modal']").appendChild(thinTokenContainer);
+
+  return thinTokenContainer;
+}
+
 async function findLabelSectorFromLocalStorage(tagId) {
   // let lastLabel = localStorage.getItem("lastLabel");
   let lastLabel = await b.storage.local.get("lastLabel");
@@ -62,10 +66,24 @@ async function findLabelSectorFromLocalStorage(tagId) {
 }
 
 // Function takes string
+// For google
 function enterTotp(otp) {
   if (nextCount != 1) throw Error("Invalid nextCount value");
-  const totpField = document.querySelector("[placeholder='Enter Code']");
+  let currUrl = window.location.toString();
 
+  console.log(currUrl);
+
+  if (currUrl.search("google") != -1) {
+    enterTotpGoogle(otp);
+  } else if (currUrl.search("yahoo") != -1) {
+    enterTotpYahoo(otp);
+  }
+
+  btDisconnect();
+}
+
+function enterTotpGoogle(otp) {
+  const totpField = document.querySelector("[placeholder='Enter Code']");
   totpField.value = otp;
   console.log(totpField.value);
   let confirmSpan = Array.from(document.querySelectorAll("button > span"))
@@ -76,9 +94,29 @@ function enterTotp(otp) {
   confirmBtn.click();
 }
 
+function enterTotpYahoo(otp) {
+  const totpField = document.querySelectorAll(".code-input-container .char-input-field input");
+  for (let i = 0; i < totpField.length; i++) {
+    console.log(otp[i]);
+    console.log(totpField[i]);
+    totpField[i].value = otp[i];
+  }
+
+  let confirmBtn = document.querySelector("#btnTsvAuthenticatorVerifyCode");
+  setTimeout(() => {
+    confirmBtn.click();
+  }, 1000);
+}
+
 function main() {
   console.log("Hello from content.js");
-  const thinTokenBtn = renderConnectBtn();
+  let thinTokenBtn;
+
+  try {
+    thinTokenBtn = renderConnectBtn();
+  } catch (error) {
+    thinTokenBtn = renderConnectDefaultBtn();
+  }
 
   if (!thinTokenBtn) return;
   hasMainRun = true;
@@ -135,7 +173,6 @@ async function statusChangeHandler(val, thinToken, lastLabel) {
             await updateStatus(statusCharacteristic, STATUS.OtpRequested);
             await requestOtp(thinToken, lastLabel);
             global_needsOtpRequest = false;
-            thinToken.device.gatt.disconnect();
           } catch (error) {
             console.log(error);
             global_needsOtpRequest = true;
@@ -183,16 +220,11 @@ async function requestOtp(thinToken, lastLabel) {
 }
 
 window.addEventListener("load", (ev) => {
-  // document.querySelector("[jsname='V67aGc']")
-  //   .addEventListener("click", ev => {
-  //     setTimeout(() => {
-  //       main();
-  //     }, 250);
-  //   });
-
+  console.log("Pre main content.js");
   const observer = new MutationObserver((mutationList, observer) => {
     const totpField = document.querySelector("[placeholder='Enter Code']");
-    if (!hasMainRun && totpField) {
+    const yahooMailTotp = document.querySelector(".tsv-authenticator-setup-option");
+    if (!hasMainRun && (totpField || yahooMailTotp)) {
       main();
     }
   });
@@ -202,6 +234,3 @@ window.addEventListener("load", (ev) => {
     subtree: true
   });
 });
-
-
-// generateAes256Key();

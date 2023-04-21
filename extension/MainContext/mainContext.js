@@ -42,6 +42,15 @@ function define(html, componentTag) {
 
       var shadow = this.attachShadow({ mode: "open" });
       shadow.innerHTML = html;
+
+      let navBtns = shadow.querySelectorAll(".navLink");
+      navBtns.forEach(el => {
+        let splittedId = el.id.split("-");
+
+        el.addEventListener("click", (ev) => {
+          navHandler(`${splittedId[1]}-${splittedId[2]}`);
+        });
+      });
     }
   }
 

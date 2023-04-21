@@ -147,6 +147,7 @@ async function statusChangeHandler(val, thinToken) {
 
         if (global_didDeleteAccount) {
           window.alert("Account deleted succefully");
+          global_didDeleteAccount = false;
         } else {
           window.alert("Account added succefully");
         }
@@ -353,6 +354,7 @@ async function otpValueChangeHandler(val, tagId) {
       val
     );
   } catch (error) {
+    window.alert("Unable to decrypt ThinToken. Is the tag yours?");
     console.error(error);
     throw error;
   }
