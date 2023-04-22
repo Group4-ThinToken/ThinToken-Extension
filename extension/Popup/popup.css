@@ -60,6 +60,7 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
+    text-align: center;
 }
 
 .button{
@@ -72,4 +73,9 @@ body{
     background: #FF4F63;
     border-color: #FF4F63;
     color: white;
+}
+
+.pop-image{
+    width: 30%;
+    height: auto;
 }
