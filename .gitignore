@@ -1,2 +1,5 @@
 extension/bower_components
 extension/node_modules
+extension.pem
+ThinToken Extension.crx
+ThinToken-Extension.zip

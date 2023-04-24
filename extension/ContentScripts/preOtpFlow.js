@@ -1,7 +1,12 @@
 function emailGetter() {
-  // TODO: Add matches to manifest to run content script
-  // in email field
-  const emailField = document.querySelector("input[type='email']");
+  const currUrl = window.location.toString();
+  let emailField;
+
+  if (currUrl.search("google") != -1) {
+    emailField = document.querySelector("input[type='email']");
+  } else if (currUrl.search("yahoo") != -1) {
+    emailField = document.querySelector("#login-username");
+  }
   
   if (!emailField) {
     return;
@@ -12,16 +17,17 @@ function emailGetter() {
 }
 
 function main() {
-  const emailNextBtn = document.querySelector("#identifierNext");
+  const emailNextBtn = document.querySelector("#identifierNext") ||
+                       document.querySelector("input[type='submit']");
 
   emailNextBtn.addEventListener("click", (ev) => {
+    console.log("click");
     emailGetter();
   });
 
   document.addEventListener("keyup", (ev) => {
     if (ev.key == "Enter") {
       emailGetter();
-      document.removeEventListener("keyup");
     }
   });
 }

@@ -1,18 +1,6 @@
 var global_needsOtpRequest = false;
 
-function renderConnectBtn() {
-  // const totpNextBtn = document.querySelector("#totpNext");
-  // const totpNextBtnWrapper = totpNextBtn.parentElement;
-  // const bottomBtnsContainer = totpNextBtnWrapper.parentElement;
-
-  // let thinTokenBtnWrapper = document.createElement("div");
-  // thinTokenBtnWrapper.classList = totpNextBtnWrapper.classList;
-
-  // let thinTokenBtn = document.createElement("div");
-  // thinTokenBtnWrapper.appendChild(thinTokenBtn);
-  // thinTokenBtn.classList = totpNextBtn.classList;
-  // thinTokenBtn.innerText = "ThinToken";
-
+function renderConnectBtnGoogle() {
   const totpNextBtnWrapper = document.querySelector("#totpNext").parentElement;
   const bottomBtnsContainer = totpNextBtnWrapper.parentElement;
 
@@ -32,6 +20,29 @@ function renderConnectBtn() {
   return thinTokenBtnWrapper;
 }
 
+function renderConnectBtnYahoo() {
+  // const otpInputField = document.querySelector("#verification-code-field");
+  const submitButton = document.querySelector("#verify-code-button");
+  const submitContainer = submitButton.parentElement;
+  const formElement = submitContainer.parentElement;
+
+  const thinTokenBtnWrapper = submitContainer.cloneNode(true);
+  const thinTokenBtn = thinTokenBtnWrapper.querySelector("button");
+  thinTokenBtnWrapper.appendChild(thinTokenBtn);
+  thinTokenBtn.innerText = "ThinToken";
+
+  thinTokenBtn.id = "thintoken-connect";
+  thinTokenBtn.name = "thintokenConnect";
+  thinTokenBtn.setAttribute("type", "button");
+  thinTokenBtn.removeAttribute("data-ylk");
+  thinTokenBtn.removeAttribute("data-rapid-tracking");
+  thinTokenBtn.removeAttribute("value");
+  
+  formElement.insertBefore(thinTokenBtnWrapper, submitContainer);
+
+  return thinTokenBtnWrapper;
+}
+
 async function findLabelSectorFromLocalStorage(tagId) {
   // let lastLabel = localStorage.getItem("lastLabel");
   let lastLabel = await b.storage.local.get("lastLabel");
@@ -46,8 +57,16 @@ async function findLabelSectorFromLocalStorage(tagId) {
   return sector;
 }
 
+function enterTotpYahoo(otp) {
+  const totpField = document.querySelector("#verification-code-field");
+
+  totpField.value = otp;
+  console.log(totpField.value);
+  document.querySelector("#totpNext").click();
+}
+
 // Function takes string
-function enterTotp(otp) {
+function enterTotpGoogle(otp) {
   const totpField = document.querySelector("#totpPin");
 
   totpField.value = otp;
@@ -57,7 +76,14 @@ function enterTotp(otp) {
 
 function main() {
   console.log("Hello from content.js");
-  const thinTokenBtn = renderConnectBtn();
+  let thinTokenBtn;
+
+  const currUrl = window.location.toString();
+  if (currUrl.search("google") != -1) {
+    thinTokenBtn = renderConnectBtnGoogle();
+  } else if (currUrl.search("yahoo") != -1) {
+    thinTokenBtn = renderConnectBtnYahoo();
+  }
 
   thinTokenBtn.addEventListener("click", async (ev) => {
     // const totpField = document.querySelector("#totpPin");
@@ -65,7 +91,6 @@ function main() {
     // let nextButton = document.querySelector("#totpNext");
     // nextButton.click();
     // ======
-
     global_needsOtpRequest = true;
     let thinTokenService = await requestThinTokenReaderService();
     let lastLabel = await b.storage.local.get("lastLabel");
@@ -81,7 +106,12 @@ function main() {
         console.log("OTP:")
         console.log(value.buffer);
 
-        enterTotp(new Uint32Array(value.buffer)[0].toString().padStart(6, "0"));
+        let totpString = new Uint32Array(value.buffer)[0].toString().padStart(6, "0");
+        if (currUrl.search("google") != -1) {
+          enterTotpGoogle(totpString);
+        } else if (currUrl.search("yahoo") != -1) {
+          enterTotpYahoo(totpString);
+        }
       }
     });
   });

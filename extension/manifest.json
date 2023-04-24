@@ -5,8 +5,8 @@
   "content_scripts": [
     {
       "matches": [
-        "https://accounts.google.com/signin/v2/challenge/totp?*"
-
+        "https://accounts.google.com/signin/v2/challenge/totp?*",
+        "https://login.yahoo.com/account/challenge/tsv-authenticator?*"
       ],
       "js": [
         "constants.js",
@@ -17,7 +17,8 @@
     }, {
       "matches": [
         "https://accounts.google.com/v3/signin/identifier*",
-        "https://login.live.com/login.srf?*"
+        "https://login.live.com/login.srf?*",
+        "https://login.yahoo.com/?*"
       ],
       "js": [
         "constants.js",

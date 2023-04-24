@@ -2,7 +2,7 @@ var global_needsOtpRequest = false;
 var nextCount = 0;
 var hasMainRun = false;
 
-function renderConnectBtn() {
+function renderConnectBtnGoogle() {
 
   let cancelSpan = Array.from(document.querySelectorAll("button > span"))
                   .filter(el => el.innerText == "Cancel");
@@ -67,7 +67,7 @@ async function findLabelSectorFromLocalStorage(tagId) {
 
 // Function takes string
 // For google
-function enterTotp(otp) {
+function enterTotpGoogle(otp) {
   if (nextCount != 1) throw Error("Invalid nextCount value");
   let currUrl = window.location.toString();
 
@@ -113,7 +113,7 @@ function main() {
   let thinTokenBtn;
 
   try {
-    thinTokenBtn = renderConnectBtn();
+    thinTokenBtn = renderConnectBtnGoogle();
   } catch (error) {
     thinTokenBtn = renderConnectDefaultBtn();
   }
@@ -149,7 +149,7 @@ function main() {
         console.log("OTP:")
         console.log(value.buffer);
 
-        enterTotp(new Uint32Array(value.buffer)[0].toString().padStart(6, "0"));
+        enterTotpGoogle(new Uint32Array(value.buffer)[0].toString().padStart(6, "0"));
       }
     });
   });
