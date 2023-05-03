@@ -62,7 +62,8 @@ function enterTotpYahoo(otp) {
 
   totpField.value = otp;
   console.log(totpField.value);
-  document.querySelector("#totpNext").click();
+  console.log(document.querySelector("#verify-code-button"));
+  document.querySelector("#verify-code-button").click();
 }
 
 // Function takes string
@@ -183,7 +184,7 @@ async function requestOtp(thinToken, lastLabel) {
   await _sectorCharacteristic.writeValueWithResponse(sectorPayload);
 }
 
-window.addEventListener("load", (ev) => {
+window.addEventListener("DOMContentLoaded", (ev) => {
   main();
 });
 
