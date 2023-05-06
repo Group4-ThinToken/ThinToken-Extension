@@ -43,11 +43,16 @@ function createAccountCard(account, shadowRoot) {
 
   deleteBtn.addEventListener("click", (ev) => {
     console.log("Click");
+    let labelStr = account.accountEmail;
+    if (account.hostname) {
+      labelStr += "-";
+      labelStr += account.hostname;
+    }
     shadowRoot.dispatchEvent(new CustomEvent("ThinToken_DeleteAcc", {
       bubbles: true,
       composed: true,
       detail: {
-        label: account.accountEmail
+        label: labelStr
       }
     }));
   });
@@ -101,25 +106,42 @@ function onAccountListLoaded(shadowRoot) {
 }
 
 function rawStringToAccObj(raw) {
-  let accountEmail = raw.split(",")[0];
+  let accountEmail = raw.split(",")[0].split("-")[0];
   let accountName;
 
-  matchers.forEach(m => {
-    let regex = new RegExp(m.find);
-    console.log("Search:", accountEmail.search(regex));
-    if (accountEmail.search(regex) !== -1) {
-      accountName = m.name;
-      // console.log("accountName:", accountName);
-    }
-  });
+  let hostname = raw.split(",")[0].split("-")[1];
+  if (hostname) {
+    matchers.forEach(m => {
+      let regex = new RegExp(m.find);
+      console.log("Search:", hostname.search(regex));
+      if (hostname.search(regex) !== -1) {
+        accountName = m.name;
+        // console.log("accountName:", accountName);
+      }
+    });
+  } else {
+    matchers.forEach(m => {
+      let regex = new RegExp(m.find);
+      console.log("Search:", accountEmail.search(regex));
+      if (accountEmail.search(regex) !== -1) {
+        accountName = m.name;
+        // console.log("accountName:", accountName);
+      }
+    });
+    hostname = "";
+  }
 
   return {
     accountEmail: accountEmail,
-    accountName: accountName
+    accountName: accountName,
+    hostname: hostname
   }
 }
 
 function appendAccount(raw) {
+  if (accounts.length > 4) {
+    return;
+  }
   let accObj = rawStringToAccObj(raw);
   accounts.push(accObj);
 

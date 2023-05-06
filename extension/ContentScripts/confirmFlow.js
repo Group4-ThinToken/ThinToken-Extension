@@ -33,10 +33,11 @@ function renderConnectDefaultBtn() {
   let connectBtn = document.createElement("button");
   connectBtn.innerText = "ThinToken";
 
-  thinTokenContainer.style.position = "absolute";
-  thinTokenContainer.style.left = "5vw";
-  thinTokenContainer.style.top = "15vh";
-  thinTokenContainer.style.zIndex = "10000";
+  thinTokenContainer.id = "thintoken-btn";
+  thinTokenContainer.style.position = "fixed";
+  thinTokenContainer.style.right = "18%";
+  thinTokenContainer.style.top = "2%";
+  thinTokenContainer.style.zIndex = "9999999";
 
   connectBtn.style.backgroundColor = "#FF4F63";
   connectBtn.style.height = "30px";
@@ -46,7 +47,7 @@ function renderConnectDefaultBtn() {
   connectBtn.style.cursor = "pointer";
 
   thinTokenContainer.appendChild(connectBtn);
-  document.querySelector("[class*='modal']").appendChild(thinTokenContainer);
+  document.querySelector("body").appendChild(thinTokenContainer);
 
   return thinTokenContainer;
 }
@@ -66,8 +67,7 @@ async function findLabelSectorFromLocalStorage(tagId) {
 }
 
 // Function takes string
-// For google
-function enterTotpGoogle(otp) {
+function preEnterTotp(otp) {
   if (nextCount != 1) throw Error("Invalid nextCount value");
   let currUrl = window.location.toString();
 
@@ -77,11 +77,20 @@ function enterTotpGoogle(otp) {
     enterTotpGoogle(otp);
   } else if (currUrl.search("yahoo") != -1) {
     enterTotpYahoo(otp);
+  } else if (currUrl.search("facebook") != -1) {
+    enterTotpFacebook(otp);
+  } else if (currUrl.search("microsoft") != -1) {
+    enterTotpMicrosoft(otp);
   }
 
+  const thinTokenContainer = document.querySelector("#thintoken-btn");
+  if (thinTokenContainer) {
+    thinTokenContainer.remove();
+  }
   btDisconnect();
 }
 
+// For google
 function enterTotpGoogle(otp) {
   const totpField = document.querySelector("[placeholder='Enter Code']");
   totpField.value = otp;
@@ -95,22 +104,56 @@ function enterTotpGoogle(otp) {
 }
 
 function enterTotpYahoo(otp) {
-  const totpField = document.querySelectorAll(".code-input-container .char-input-field input");
-  for (let i = 0; i < totpField.length; i++) {
-    console.log(otp[i]);
-    console.log(totpField[i]);
-    totpField[i].value = otp[i];
-  }
+  const totpField = document.querySelector(".code-input-container .char-input-field input");
+  // for (let i = 0; i < totpField.length; i++) {
+  //   console.log(otp[i]);
+  //   console.log(totpField[i]);
+  //   totpField[i].value = otp[i];
+  // }
 
-  let confirmBtn = document.querySelector("#btnTsvAuthenticatorVerifyCode");
-  setTimeout(() => {
-    confirmBtn.click();
-  }, 1000);
+  totpField.focus();
+  navigator.clipboard.writeText(otp)
+    .then(() => {
+      document.execCommand("paste");
+    })
+  document.querySelector("#btnTsvAuthenticatorVerifyCode").click();
+}
+
+function enterTotpFacebook(otp) {
+  console.log("totp fb");
+  const totpField = document.querySelector("input");
+  totpField.style.color = "white";
+
+  totpField.focus();
+  navigator.clipboard.writeText(otp)
+    .then(() => {
+      document.execCommand("paste");
+    });
+}
+
+function enterTotpMicrosoft(otp) {
+  const totpField = document.querySelector("input[placeholder='Enter code']");
+
+  totpField.focus();
+  navigator.clipboard.writeText(otp)
+    .then(() => {
+      document.execCommand("paste");
+    });
+
+    [...document.querySelectorAll(".ms-Dialog-action > button[type='button'] span")].find(e => e.innerText == "Next").click();
 }
 
 function main() {
   console.log("Hello from content.js");
   let thinTokenBtn;
+
+  let currHostname = window.location.hostname.toString();
+  currHostname = currHostname.split(".");
+  currHostname = `${currHostname[currHostname.length-2]}.${currHostname[currHostname.length-1]}`;
+  if (currHostname == "microsoft.com") {
+    currHostname = "microsoftonline.com";
+  }
+  b.storage.local.set({ lastHostname: currHostname });
 
   try {
     thinTokenBtn = renderConnectBtnGoogle();
@@ -149,7 +192,7 @@ function main() {
         console.log("OTP:")
         console.log(value.buffer);
 
-        enterTotpGoogle(new Uint32Array(value.buffer)[0].toString().padStart(6, "0"));
+        preEnterTotp(new Uint32Array(value.buffer)[0].toString().padStart(6, "0"));
       }
     });
   });
@@ -202,6 +245,9 @@ async function requestOtp(thinToken, lastLabel) {
   // DATA: [0:12) - IV
   // DATA: [12:44) - Key
   if (!lastLabel) throw Error("Last label is null.");
+  let hostname = window.location.hostname.toString();
+  hostname = hostname.split(".");
+  hostname = `${hostname[hostname.length-2]}.${hostname.length-1}}`;
 
   let _sectorCharacteristic = await thinToken.getCharacteristic(BT.SECTOR_CHARACTERISTIC);
   let _secretCharacteristic = await thinToken.getCharacteristic(BT.SECRET_CHARACTERISTIC);
@@ -214,23 +260,24 @@ async function requestOtp(thinToken, lastLabel) {
   await _secretCharacteristic.writeValueWithoutResponse(secretPayload);
 
   let sectorPayload = new Uint8Array(2);
-  sectorPayload[0] = localKeyIvObject[lastLabel];
+  let sectorNum = localKeyIvObject[`${lastLabel}-${hostname}`] || localKeyIvObject[lastLabel];
+  sectorPayload[0] = sectorNum;
   sectorPayload[1] = 0xFF;
   await _sectorCharacteristic.writeValueWithResponse(sectorPayload);
 }
 
-window.addEventListener("load", (ev) => {
-  console.log("Pre main content.js");
-  const observer = new MutationObserver((mutationList, observer) => {
-    const totpField = document.querySelector("[placeholder='Enter Code']");
-    const yahooMailTotp = document.querySelector(".tsv-authenticator-setup-option");
-    if (!hasMainRun && (totpField || yahooMailTotp)) {
-      main();
-    }
-  });
+console.log("Pre main content.js");
+const observer = new MutationObserver((mutationList, observer) => {
+  const totpField = document.querySelector("[placeholder='Enter Code']");
+  const yahooMailTotp = document.querySelector(".tsv-authenticator-setup-option");
+  const fbPrompt = [...document.querySelectorAll("div:not(:has(*))")].findIndex(e => e.innerText == "Enter confirmation code") != -1
+  const microsoftPrompt = document.querySelector("#secretKeyLabel");
+  if (!hasMainRun && (totpField || yahooMailTotp || fbPrompt || microsoftPrompt)) {
+    main();
+  }
+});
 
-  observer.observe(document, {
-    childList: true,
-    subtree: true
-  });
+observer.observe(document, {
+  childList: true,
+  subtree: true
 });

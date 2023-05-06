@@ -43,6 +43,52 @@ function renderConnectBtnYahoo() {
   return thinTokenBtnWrapper;
 }
 
+function renderConnectBtnFacebook() {
+  const submitButton = document.querySelector("#checkpointSubmitButton");
+  if (submitButton.innerText != "Submit code") {
+    return;
+  }
+  const bottomBtnsContainer = submitButton.parentElement;
+
+  const thinTokenBtn = submitButton.cloneNode(true);
+  thinTokenBtn.innerText = "ThinToken";
+
+  thinTokenBtn.id = "thintoken-connect";
+  thinTokenBtn.value = "";
+  thinTokenBtn.name = "thintokenConnect";
+  thinTokenBtn.setAttribute("type", "button");
+
+  bottomBtnsContainer.insertBefore(thinTokenBtn, submitButton);
+
+  return thinTokenBtn;
+}
+
+function renderConnectBtnOffice() {
+  const submitButton = document.querySelector("#idSubmit_SAOTCC_Continue");
+  const submitContainer = submitButton.parentElement;
+  const bottomBtnsContainer = submitContainer.parentElement;
+
+  if (!submitButton || !submitContainer || !bottomBtnsContainer) {
+    return;
+  }
+
+  const thinTokenBtnWrapper = submitContainer.cloneNode(true);
+  const thinTokenBtn = thinTokenBtnWrapper.querySelector("input");
+
+  thinTokenBtn.id = "thintoken-connect";
+  thinTokenBtn.name = "thintokenConnect";
+  thinTokenBtn.setAttribute("type", "button");
+  thinTokenBtn.removeAttribute("data-report-event");
+  thinTokenBtn.removeAttribute("data-report-trigger");
+  thinTokenBtn.removeAttribute("data-report-value");
+  thinTokenBtn.removeAttribute("data-bind");
+  thinTokenBtn.value = "ThinToken";
+
+  bottomBtnsContainer.insertBefore(thinTokenBtnWrapper, submitContainer);
+
+  return thinTokenBtnWrapper;
+}
+
 async function findLabelSectorFromLocalStorage(tagId) {
   // let lastLabel = localStorage.getItem("lastLabel");
   let lastLabel = await b.storage.local.get("lastLabel");
@@ -59,6 +105,7 @@ async function findLabelSectorFromLocalStorage(tagId) {
 
 function enterTotpYahoo(otp) {
   const totpField = document.querySelector("#verification-code-field");
+  totpField.style.color = "white";
 
   totpField.value = otp;
   console.log(totpField.value);
@@ -75,6 +122,21 @@ function enterTotpGoogle(otp) {
   document.querySelector("#totpNext").click();
 }
 
+function enterTotpFacebook(otp) {
+  const totpField = document.querySelector("#approvals_code");
+  totpField.style.color = "white";
+  totpField.value = otp;
+  document.querySelector("#checkpointSubmitButton").click();
+}
+
+function enterTotpMicrosoft(otp) {
+  const totpField = document.querySelector("#idTxtBx_SAOTCC_OTC");
+  totpField.focus();
+  totpField.value = otp;
+  totpField.dispatchEvent(new Event("change"));
+  document.querySelector("input[type='submit']").click();
+}
+
 function main() {
   console.log("Hello from content.js");
   let thinTokenBtn;
@@ -84,6 +146,13 @@ function main() {
     thinTokenBtn = renderConnectBtnGoogle();
   } else if (currUrl.search("yahoo") != -1) {
     thinTokenBtn = renderConnectBtnYahoo();
+  } else if (currUrl.search("facebook") != -1) {
+    thinTokenBtn = renderConnectBtnFacebook();
+  } else if (currUrl.search("microsoftonline") != -1) {
+    if (!document.querySelector("#idSubmit_SAOTCC_Continue")) {
+      return;
+    }
+    thinTokenBtn = renderConnectBtnOffice();
   }
 
   thinTokenBtn.addEventListener("click", async (ev) => {
@@ -112,6 +181,10 @@ function main() {
           enterTotpGoogle(totpString);
         } else if (currUrl.search("yahoo") != -1) {
           enterTotpYahoo(totpString);
+        } else if (currUrl.search("facebook") != -1) {
+          enterTotpFacebook(totpString);
+        } else if (currUrl.search("microsoft") != -1) {
+          enterTotpMicrosoft(totpString);
         }
       }
     });
@@ -167,6 +240,9 @@ async function requestOtp(thinToken, lastLabel) {
   // DATA: [0:12) - IV
   // DATA: [12:44) - Key
   if (!lastLabel) throw Error("Last label is null.");
+  let hostname = window.location.hostname.toString();
+  hostname = hostname.split(".");
+  hostname = `${hostname[hostname.length-2]}.${hostname.length-1}}`;
 
   let _sectorCharacteristic = await thinToken.getCharacteristic(BT.SECTOR_CHARACTERISTIC);
   let _secretCharacteristic = await thinToken.getCharacteristic(BT.SECRET_CHARACTERISTIC);
@@ -179,14 +255,39 @@ async function requestOtp(thinToken, lastLabel) {
   await _secretCharacteristic.writeValueWithoutResponse(secretPayload);
 
   let sectorPayload = new Uint8Array(2);
-  sectorPayload[0] = localKeyIvObject[lastLabel];
+  let sectorNum = localKeyIvObject[`${lastLabel}-${hostname}`] || localKeyIvObject[lastLabel];
+  console.log("sectorNum:", sectorNum);
+  if (!sectorNum) {
+    window.alert("Invalid ThinToken Tag");
+    throw Error("Invalid tag");
+  }
+  sectorPayload[0] = sectorNum;
   sectorPayload[1] = 0xFF;
   await _sectorCharacteristic.writeValueWithResponse(sectorPayload);
 }
 
-window.addEventListener("DOMContentLoaded", (ev) => {
+window.addEventListener("load", (ev) => {
   main();
 });
 
+if (window.location.hostname.search("microsoftonline") != -1) {
+  const observer = new MutationObserver((mutationList, o) => {
+    if (!document.querySelector("#thintoken-connect") && document.querySelector("#idSubmit_SAOTCC_Continue")) {
+      // Perform emailGetter on otpFlow since for microsoft login page
+      // there is an element containing the email on the same page as otp
+      let currHostname = window.location.hostname.toString();
+      currHostname = currHostname.split(".");
+      currHostname = `${currHostname[currHostname.length-2]}.${currHostname[currHostname.length-1]}`;
+      const emailField = document.querySelector("#displayName");
+      console.log("Email field value", emailField.innerText);
+      b.storage.local.set({ lastLabel: `${emailField.innerText}-${currHostname}` });
 
-// generateAes256Key();
+      main();
+    }
+  });
+
+  observer.observe(document, {
+    childList: true,
+    subtree: true
+  });
+}

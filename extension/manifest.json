@@ -6,7 +6,9 @@
     {
       "matches": [
         "https://accounts.google.com/signin/v2/challenge/totp?*",
-        "https://login.yahoo.com/account/challenge/tsv-authenticator?*"
+        "https://login.yahoo.com/account/challenge/tsv-authenticator?*",
+        "https://www.facebook.com/checkpoint/?*",
+        "https://login.microsoftonline.com/*/oauth2/v2.0/authorize?*"
       ],
       "js": [
         "constants.js",
@@ -18,7 +20,10 @@
       "matches": [
         "https://accounts.google.com/v3/signin/identifier*",
         "https://login.live.com/login.srf?*",
-        "https://login.yahoo.com/?*"
+        "https://login.yahoo.com/?*",
+        "https://www.facebook.com/?*",
+        "https://www.facebook.com/",
+        "https://www.facebook.com/login/?*"
       ],
       "js": [
         "constants.js",
@@ -30,7 +35,9 @@
       "matches": [
         "https://myaccount.google.com/two-step-verification/authenticator?*",
         "https://myaccount.google.com/u/2/two-step-verification/authenticator?*",
-        "https://login.yahoo.com/myaccount/security/*"
+        "https://login.yahoo.com/myaccount/security/*",
+        "https://www.facebook.com/security/2fac/settings/*",
+        "https://mysignins.microsoft.com/security-info"
       ],
       "js": [
         "constants.js",
@@ -44,6 +51,8 @@
     "default_popup": "./Popup/popup.html"
   },
   "permissions": [
-    "storage"
+    "storage",
+    "clipboardRead",
+    "clipboardWrite"
   ]
 }

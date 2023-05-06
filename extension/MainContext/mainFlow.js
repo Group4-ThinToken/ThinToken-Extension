@@ -208,6 +208,13 @@ async function addData(thinToken, label, secret) {
     return;
   }
 
+  let service = await b.storage.local.get("lastHostname");
+  service = service["lastHostname"];
+
+  if (service) {
+    label = `${label}-${service}`;
+  }
+
   // Store label on local storage lastLabel
   // so we can store sector data later
   let lastLabelStore = b.storage.local.set({ lastLabel: label });
@@ -246,8 +253,10 @@ async function addData(thinToken, label, secret) {
   // Sanitize label and secret from ',' character
   label = label.replaceAll(',', "%2C");
   secret = secret.replaceAll(',', "%2C");
+  console.log(service);
+  service = service.replaceAll(',', "%2C");
 
-  let btMsg = label + "," + secret;
+  let btMsg = label + "-" + service + "," + secret;
   
   btMsg = btMsg.replaceAll(' ', '');
   btMsg += " "; // Add space at the end as a stop byte
