@@ -116,7 +116,7 @@ function enterTotpYahoo(otp) {
 // Function takes string
 function enterTotpGoogle(otp) {
   const totpField = document.querySelector("#totpPin");
-
+  totpField.style.color = "white";
   totpField.value = otp;
   console.log(totpField.value);
   document.querySelector("#totpNext").click();
@@ -132,6 +132,7 @@ function enterTotpFacebook(otp) {
 function enterTotpMicrosoft(otp) {
   const totpField = document.querySelector("#idTxtBx_SAOTCC_OTC");
   totpField.focus();
+  totpField.style.color = "white";
   totpField.value = otp;
   totpField.dispatchEvent(new Event("change"));
   document.querySelector("input[type='submit']").click();
