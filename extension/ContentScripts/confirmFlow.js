@@ -53,13 +53,11 @@ function renderConnectDefaultBtn() {
 }
 
 async function findLabelSectorFromLocalStorage(tagId) {
-  // let lastLabel = localStorage.getItem("lastLabel");
   let lastLabel = await b.storage.local.get("lastLabel");
   if (!lastLabel) {
     return;
   }
 
-  // let localKeyIvObject = JSON.parse(localStorage.getItem(tagId));
   let localKeyIvObject = await b.storage.local.get(tagId);
   localKeyIvObject = localKeyIvObject[tagId];
   let sector = localKeyIvObject[lastLabel];
@@ -105,11 +103,6 @@ function enterTotpGoogle(otp) {
 
 function enterTotpYahoo(otp) {
   const totpField = document.querySelector(".code-input-container .char-input-field input");
-  // for (let i = 0; i < totpField.length; i++) {
-  //   console.log(otp[i]);
-  //   console.log(totpField[i]);
-  //   totpField[i].value = otp[i];
-  // }
 
   totpField.focus();
   navigator.clipboard.writeText(otp)
@@ -164,18 +157,8 @@ function main() {
   if (!thinTokenBtn) return;
   hasMainRun = true;
 
-  // const setUpBtn = document.querySelector("[jsname='LgbsSe']");
-  // console.log(setUpBtn);
-  // if (!setUpBtn) return;
-
   console.log("Adding event listener");
   thinTokenBtn.addEventListener("click", async (ev) => {
-    // const totpField = document.querySelector("#totpPin");
-    // totpField.value = "11111";
-    // let nextButton = document.querySelector("#totpNext");
-    // nextButton.click();
-    // ======
-
     nextCount = 1;
     global_needsOtpRequest = true;
     let thinTokenService = await requestThinTokenReaderService();
@@ -197,8 +180,6 @@ function main() {
     });
   });
 }
-
-// TODO: Use 
 
 async function statusChangeHandler(val, thinToken, lastLabel) {
   if (val.byteLength != 0) {

@@ -97,7 +97,6 @@ async function deleteAccount(thinToken, accountLabel) {
 async function generateAndStoreKey(thinToken) {
   let tagId = await getThinTokenId();
 
-  // let existingKey = localStorage.getItem(tagId);
   let existingKey = await b.storage.local.get(tagId);
 
   if (Object.keys(existingKey).length == 0) {
@@ -109,7 +108,6 @@ async function generateAndStoreKey(thinToken) {
       key: Array.from(rawKey)
     };
     console.log(obj)
-    // localStorage.setItem(tagId, JSON.stringify(obj));
     await b.storage.local.set({ [tagId]: obj });
   } else {
     console.log("Reusing existing key");
@@ -246,7 +244,6 @@ async function addData(thinToken, label, secret) {
 
   btListen(thinToken, BT.SECTOR_CHARACTERISTIC, (val) => {
     localKeyIvObject[label] = val;
-    // localStorage.setItem(tagId, JSON.stringify(localKeyIvObject));
     b.storage.local.set({ [tagId]: localKeyIvObject });
   });
 
